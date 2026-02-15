@@ -94,7 +94,16 @@ const PANEL = {
 
 export function Services() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const sync = () => setIsDesktop(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   /* ── Scroll-linked active tracking ────────────────────
    * On every scroll frame, find the panel whose vertical
@@ -228,10 +237,11 @@ export function Services() {
               >
                 <motion.div
                   animate={{
-                    opacity:
-                      i === activeIndex
+                    opacity: isDesktop
+                      ? i === activeIndex
                         ? PANEL.activeOpacity
-                        : PANEL.inactiveOpacity,
+                        : PANEL.inactiveOpacity
+                      : 1,
                   }}
                   transition={PANEL.spring}
                 >
@@ -259,7 +269,7 @@ export function Services() {
                     <div
                       className={`mt-8 grid gap-4 ${
                         s.beforeAfters.length > 1
-                          ? "grid-cols-2"
+                          ? "grid-cols-1 sm:grid-cols-2"
                           : "grid-cols-1"
                       }`}
                     >

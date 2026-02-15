@@ -168,15 +168,19 @@ export function Footer() {
       </div>
 
       {/* Utility row — bottom */}
-      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[12px] text-eav-cream/60 font-body">
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pb-6 sm:pb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[12px] text-eav-cream/60 font-body">
         <span>
-          &copy; {new Date().getFullYear()} EAV Wash Co., LLC. All rights reserved.
-          <span className="mx-2">·</span>
-          With{" "}
-          <svg viewBox="0 0 20 20" fill="currentColor" className="inline w-[14px] h-[14px] text-eav-orange -mt-px mx-0.5">
-            <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.723.723 0 0 1-.692 0h-.002Z" />
-          </svg>{" "}
-          from Atlanta
+          <span className="block sm:inline">
+            &copy; {new Date().getFullYear()} EAV Wash Co., LLC. All rights reserved.
+          </span>
+          <span className="hidden sm:inline mx-2">·</span>
+          <span className="block sm:inline">
+            With{" "}
+            <svg viewBox="0 0 20 20" fill="currentColor" className="inline w-[14px] h-[14px] text-eav-orange -mt-px mx-0.5">
+              <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.723.723 0 0 1-.692 0h-.002Z" />
+            </svg>{" "}
+            from Atlanta
+          </span>
         </span>
         <Link href="/privacy" className="hover:text-eav-cream/50 transition-colors">
           Privacy
