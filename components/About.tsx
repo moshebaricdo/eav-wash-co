@@ -104,7 +104,7 @@ export function About() {
 
             {/* Street sign — fills empty space below heading, aspect ratio preserved */}
             <motion.div
-              className="relative mt-8 lg:mt-16 -mb-24 lg:-mb-28 ml-8 flex-1 min-h-[160px] sm:min-h-[200px] hidden sm:block"
+              className="relative mt-8 lg:mt-16 -mb-24 lg:-mb-28 ml-8 flex-1 min-h-[160px] sm:min-h-[200px] hidden lg:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: isInView ? 1 : 0 }}
               transition={{ ...ANIM.spring, delay: 0.7 }}
