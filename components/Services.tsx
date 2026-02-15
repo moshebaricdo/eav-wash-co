@@ -42,7 +42,7 @@ const SERVICES: {
   {
     name: "Driveway",
     description:
-      "A clean driveway changes the whole first impression of your home. Our driveway pressure washing service removes oil spots, tire marks, algae, and ground-in grime from concrete so your entrance looks bright, sharp, and cared for again. We use the right pressure and technique for residential concrete cleaning in Atlanta, so you get a deep clean without chewing up the surface.",
+      "Your driveway takes the brunt of daily life. Dirt, organic growth, cars, oil drips, tire marks, and good old Atlanta humidity all leave their mark over time, especially on untreated concrete. We use professional surface cleaning equipment and targeted treatments to break down buildup at the source while protecting the integrity of the slab. You’ll be surprised how much more fresh your property feels with a clean, bright driveway.",
     beforeAfters: [
       { label: "Driveway", before: drivewayDirty1, after: drivewayClean1, aspect: "aspect-[16/9]" },
     ],
@@ -51,7 +51,7 @@ const SERVICES: {
   {
     name: "Patio & Deck",
     description:
-      "Patios and decks take a beating in Atlanta heat, shade, and rain. Our patio and deck pressure washing service lifts algae, mildew, dirt, and stains from pavers, stone, concrete, and wood so your outdoor space feels fresh, safe, and ready to use again. Whether you are hosting friends or just want your backyard back, we focus on detail-driven exterior cleaning that restores curb appeal without harsh treatment.",
+      "Decks and patios deal with constant exposure to heat, moisture, and shade. That mix is the perfect recipe for algae, mildew, and surface staining. Each material requires a different approach. Concrete and pavers can handle deeper, high-pressure surface cleaning, while wood demands a more gentle approach and special chemical solutions. We adjust our methods based on the material we’re working with so the space is refreshed without unnecessary wear and tear. The result is a patio or deck that feels clean, solid underfoot, and ready to show off again.",
     beforeAfters: [
       { label: "Patio", before: patioDirty1, after: patioClean1, aspect: "aspect-[4/3]" },
       { label: "Deck", before: deckDirty1, after: deckClean1, aspect: "aspect-[4/3]" },
@@ -61,7 +61,7 @@ const SERVICES: {
   {
     name: "Walkway",
     description:
-      "Walkways and sidewalks get dirty fast from foot traffic, weather, and runoff. We clean concrete and paver paths to clear dark buildup and slippery spots, so the route to your front door looks sharp and feels safer underfoot.",
+      "Walkways and sidewalks accumulate grime gradually, which is why many homeowners don’t notice how dark they’ve become until they’re cleaned. Runoff, foot traffic, and organic growth create uneven discoloration and slick spots, especially in shaded areas. We restore a more even, consistent surface, from your portion of the sidewalk right up to your doorstep, improving both appearance and traction. It’s a small upgrade that noticeably sharpens the overall look of a property.",
     beforeAfters: [],
     images: [],
   },
@@ -176,7 +176,7 @@ export function Services() {
                     type="button"
                     className="block font-heading font-bold uppercase leading-[1] tracking-tight text-left cursor-pointer"
                     style={{
-                      fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)",
+                      fontSize: "clamp(2.8rem, 6.5vw, 5rem)",
                     }}
                     animate={{
                       color:
@@ -229,10 +229,10 @@ export function Services() {
               <div
                 key={s.name}
                 ref={setRef(i)}
-                className={`flex items-start border-eav-black/10 ${
+                className={`flex items-start ${
                   i === 0
-                    ? "pt-0 pb-10"
-                    : "border-t pt-10 pb-10"
+                    ? "pt-0 pb-8"
+                    : "pt-8 pb-8"
                 } lg:min-h-[70vh] lg:pt-12 lg:pb-12`}
               >
                 <motion.div
@@ -260,7 +260,7 @@ export function Services() {
                   </h3>
 
                   {/* Description */}
-                  <p className="font-body text-eav-black/80 text-base sm:text-lg leading-relaxed">
+                  <p className="font-body text-eav-black/80 text-base leading-relaxed">
                     {s.description}
                   </p>
 

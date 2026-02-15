@@ -49,13 +49,12 @@ function FAQItem({
     >
       <button
         type="button"
-        className="w-full flex items-center justify-between gap-6 py-7 sm:py-8 text-left cursor-pointer group"
+        className="w-full flex items-center justify-between gap-6 py-4 sm:py-4 text-left cursor-pointer group"
         onClick={onToggle}
         aria-expanded={isOpen}
       >
         <span
-          className="font-heading font-bold uppercase tracking-tight text-eav-black group-hover:text-eav-orange transition-colors leading-[1.1]"
-          style={{ fontSize: "clamp(1.25rem, 2.5vw, 2rem)" }}
+          className="text-lg sm:text-xl font-body font-bold tracking-tight text-eav-black group-hover:text-eav-orange transition-colors leading-[1.1]"
         >
           {faq.question}
         </span>
@@ -79,7 +78,7 @@ function FAQItem({
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="font-body text-eav-black/80 text-base leading-relaxed pb-8 max-w-6xl space-y-4">
+            <div className="font-body text-eav-black/80 text-base leading-relaxed pb-4 max-w-6xl space-y-4">
               {faq.answer.split(/\n\n+/).map((paragraph, i) =>
                 faq.question === COST_FAQ_QUESTION && i === 1 ? (
                   <p key={i}>
@@ -136,9 +135,10 @@ export function FAQ() {
     >
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
         {/* Header */}
-        <div className="mb-6 sm:mb-6">
+        <div className="mb-8 sm:mb-8">
           <motion.p
-            className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange text-[14px] mb-6"
+            className="font-heading font-bold uppercase text-eav-black leading-[1] tracking-tight"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: isInView ? 1 : 0 }}
             transition={{ ...ANIM.spring, delay: 0.2 }}

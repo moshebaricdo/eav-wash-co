@@ -78,7 +78,7 @@ export function About() {
           {/* Left column — headline + street sign in empty space below */}
           <div className="relative flex flex-col min-h-0">
             <motion.p
-              className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange text-[14px] mb-6"
+              className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange-bright text-[14px] mb-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: isInView ? 1 : 0 }}
               transition={{ ...ANIM.spring, delay: 0.2 }}
@@ -88,7 +88,7 @@ export function About() {
 
             <motion.h2
               id="about-heading"
-              className="font-heading font-bold uppercase text-eav-cream leading-[1] tracking-tight"
+              className="font-heading font-bold uppercase text-eav-white leading-[1] tracking-tight"
               style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
               initial={{ opacity: 0, y: ANIM.offsetY }}
               animate={{
@@ -97,9 +97,9 @@ export function About() {
               }}
               transition={{ ...ANIM.spring, delay: 0.4 }}
             >
-              We bring the pressure
+              You have the concrete,
               <br />
-              to your concrete
+              we'll bring the pressure.
             </motion.h2>
 
             {/* Street sign — fills empty space below heading, aspect ratio preserved */}
@@ -132,11 +132,11 @@ export function About() {
               }}
               transition={{ ...ANIM.spring, delay: 0.6 }}
             >
-              <p className="font-body text-eav-cream/70 text-base sm:text-base leading-relaxed">
+              <p className="font-body text-eav-cream/80 text-base sm:text-base leading-relaxed">
               EAV Wash Co. was a venture started by EAV-residents Trev and Moshe, combining hands-on trade 
               experience with a modern, no-BS approach to service. With backgrounds in property inspection, 
-              commercial painting, specialty home installations, design, and marketing, we saw an opportunity 
-              to build something focused and well-run. Pressure washing became our starting point because it’s 
+              contracting work, design, and marketing, we saw an opportunity 
+              to build something focused and well-run. Pressure washing became our starting point because it's 
               straightforward work that delivers real, visible results when done properly.
               </p>
               <p className="font-body text-eav-cream/70 text-base sm:text-base leading-relaxed mt-4">
@@ -158,20 +158,20 @@ export function About() {
             >
               {/* Core neighborhoods */}
               <div className="mb-6">
-                <p className="font-heading font-bold uppercase tracking-[0.15em] text-eav-orange text-[12px] mb-3">
+                <p className="font-heading font-bold uppercase tracking-[0.15em] text-eav-orange-bright text-[12px] mb-3">
                   Home Base
                 </p>
-                <p className="font-body text-eav-cream/50 text-sm leading-relaxed">
+                <p className="font-body text-eav-cream/80 text-sm leading-relaxed">
                   {CORE_NEIGHBORHOODS.join(" · ")}
                 </p>
               </div>
 
               {/* Greater metro */}
               <div>
-                <p className="font-heading font-bold uppercase tracking-[0.15em] text-eav-orange text-[12px] mb-3">
+                <p className="font-heading font-bold uppercase tracking-[0.15em] text-eav-orange-bright text-[12px] mb-3">
                   ITP and Beyond
                 </p>
-                <p className="font-body text-eav-cream/50 text-sm leading-relaxed">
+                <p className="font-body text-eav-cream/80 text-sm leading-relaxed">
                   {GREATER_METRO.join(" · ")}
                 </p>
               </div>

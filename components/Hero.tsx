@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { EstimateForm, type ReviewData } from "@/components/EstimateForm";
+import asphaltDarkAvif from "@/assets/background/asphalt-dark.avif";
+import asphaltDarkJpg from "@/assets/background/asphalt-dark.jpg";
 
 
 /* ─────────────────────────────────────────────────────────
@@ -64,27 +66,42 @@ export function Hero() {
       data-header-theme="dark"
       className="relative min-h-dvh flex items-center overflow-hidden bg-eav-black"
     >
+      <picture className="absolute inset-0 z-0 block pointer-events-none select-none">
+        <source srcSet={asphaltDarkAvif.src} type="image/avif" />
+        <img
+          src={asphaltDarkJpg.src}
+          alt=""
+          aria-hidden
+          className="h-full w-full object-cover opacity-20"
+          loading="eager"
+          decoding="async"
+        />
+      </picture>
+
       {/* ── Content ───────────────────────────────────────── */}
       <div className="relative z-10 mx-auto max-w-[1400px] w-full px-5 sm:px-8 py-24 sm:py-20 lg:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-12 lg:gap-16 items-start">
 
           {/* ── Left column: text + social proof ──────────── */}
           <div>
-            {/* Eyebrow */}
+
+            {/* Headline */}
             <motion.p
-              className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange text-[14px] mb-8 sm:mb-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: stage >= 1 ? 1 : 0 }}
+              className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange-bright text-[14px] mb-8"
+              initial={{ opacity: 0, y: ENTRANCE.offsetY }}
+              animate={{
+                opacity: stage >= 1 ? 1 : 0,
+                y: stage >= 1 ? 0 : ENTRANCE.offsetY,
+              }}
               transition={ENTRANCE.spring}
             >
               PRESSURE WASHING IN ATLANTA
             </motion.p>
-
-            {/* Headline */}
+            
             <motion.h1
               id="hero-heading"
               className="font-heading font-bold uppercase text-eav-white leading-[1] tracking-tight"
-              style={{ fontSize: "clamp(3.2rem, 8vw, 5.5rem)" }}
+              style={{ fontSize: "clamp(3.2rem, 8vw, 5rem)" }}
               initial={{ opacity: 0, y: ENTRANCE.offsetY }}
               animate={{
                 opacity: stage >= 2 ? 1 : 0,
@@ -92,9 +109,7 @@ export function Hero() {
               }}
               transition={ENTRANCE.spring}
             >
-              Bring the pressure 
-              <br />
-              to your concrete
+              Make your concrete feel like new again.
             </motion.h1>
 
             {/* Subhead + phone CTA */}
@@ -107,9 +122,8 @@ export function Hero() {
               transition={ENTRANCE.spring}
               className="mt-8 sm:mt-9"
             >
-              <p className="font-body text-eav-cream text-base sm:text-lg max-w-full">
-                Pressure washing for driveways, patios, decks, and walkways, done right here in
-                East Atlanta Village.
+              <p className="font-body text-eav-cream text-base sm:text-lg max-w-xl">
+                We offer pressure washing services for homeowners, focusing on driveways, patios, decks, and walkways, right here in East Atlanta and all of the Metro Atlanta area.
               </p>
 
               {/* Contact CTAs */}

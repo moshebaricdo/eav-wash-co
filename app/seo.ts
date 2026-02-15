@@ -56,16 +56,6 @@ export const FAQS = [
       "We carry specialty cleaning solutions for things like oil, grease, rust, red clay, and heavy organic buildup. That said, pressure washing is a cleaning method, not full concrete restoration, so while we can dramatically improve most stains, full removal isn't always guaranteed. We'll always set realistic expectations before starting the job.",
   },
   {
-    question: "What cleaning products do you use?",
-    answer:
-      "We use professional-grade cleaning solutions, including diluted sodium hypochlorite (a standard industry cleaner similar to pool chlorine), as well as specialty products for rust and oil treatment when needed (industrial degreasers, oxalic acid solutions, etc). These are applied in controlled concentrations appropriate for residential pressure washing. The goal is effective cleaning without unnecessary chemical exposure.",
-  },
-  {
-    question: "Do I need to be home during the service?",
-    answer:
-      "No, as long as we have access to the areas being cleaned and a working outdoor water spigot, you don't need to be present. We'll share a video-walkthrough and photos if you're not able to be on site to do a post-wash walkthrough.",
-  },
-  {
     question: "Will pressure washing damage painted or stained wood?",
     answer:
       "Pressure washing is safe for many surfaces when handled correctly, but painted, freshly stained, or sealed wood can potentially be affected by high pressure. If you're unsure about your surface, let us know during the estimate process. We'll evaluate it and advise you honestly before proceeding.",
@@ -76,14 +66,24 @@ export const FAQS = [
       "Protecting your lawn and garden is part of the job. We'll always pre and post-rinse surrounding vegetation, use controlled chemical applications, and thoroughly rinse treated areas after cleaning. When handled properly, professional pressure washing should not harm healthy plants or grass.",
   },
   {
-    question: "What areas do you serve?",
+    question: "What cleaning products do you use?",
     answer:
-      "We're based in East Atlanta and serve homeowners across Atlanta and the surrounding metro area. If your specific neighborhood isn't listed on our site, that doesn't necessarily mean we don't travel there — reach out and we'll confirm availability.",
+      "We use professional-grade cleaning solutions, including diluted sodium hypochlorite (a standard industry cleaner similar to pool chlorine), as well as specialty products for rust and oil treatment when needed (industrial degreasers, oxalic acid solutions, etc). These are applied in controlled concentrations appropriate for residential pressure washing. The goal is effective cleaning without unnecessary chemical exposure.",
+  },
+  {
+    question: "Do I need to be home during the service?",
+    answer:
+      "No, as long as we have access to the areas being cleaned and a working outdoor water spigot, you don't need to be present. We'll share a video-walkthrough and photos if you're not able to be on site to do a post-wash walkthrough.",
   },
   {
     question: "Do you need to use my water?",
     answer:
       "Yes. Like the majority of pressure washing companies, we make use of your outdoor water supply. Our equipment connects directly to a standard hose spigot, and we control flow carefully throughout the job. For most driveway or patio cleanings, water usage is under $5 and far cheaper than the cost of hauling tanks of water back and forth during a job.",
+  },
+  {
+    question: "What areas do you serve?",
+    answer:
+      "We're based in East Atlanta and serve homeowners across Atlanta and the surrounding metro area. If your specific neighborhood isn't listed on our site, that doesn't necessarily mean we don't travel there — reach out and we'll confirm availability.",
   },
   {
     question: "Are you insured?",
