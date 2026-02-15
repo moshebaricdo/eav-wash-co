@@ -1,0 +1,187 @@
+"use client";
+
+import { useCallback, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const BADGES = [
+  { icon: "✦", label: "Fully Insured" },
+  { icon: "✦", label: "Locally Owned" },
+  { icon: "✦", label: "Free Estimates" },
+];
+
+function Wordmark({ variant = "fill" }: { variant?: "fill" | "outline" }) {
+  const isOutline = variant === "outline";
+
+  return (
+    <svg
+      viewBox="0 0 233 31"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`w-full h-auto ${isOutline ? "[&_*]:fill-transparent [&_*]:stroke-current [&_*]:stroke-[0.5]" : ""}`}
+      aria-label="EAV Wash Co."
+    >
+      <path d="M0 29.3393V0.921327C0 0.745546 0.149917 0.59906 0.329817 0.59906H17.0805C17.2604 0.59906 17.4104 0.745546 17.4104 0.921327V6.20453C17.4104 6.38031 17.2604 6.5268 17.0805 6.5268H7.37592C7.19602 6.5268 7.0461 6.67327 7.0461 6.84905V11.1752C7.0461 11.351 7.19602 11.4975 7.37592 11.4975H13.4625C13.6425 11.4975 13.7924 11.644 13.7924 11.8198V17.0639C13.7924 17.2397 13.6425 17.3862 13.4625 17.3862H7.37592C7.19602 17.3862 7.0461 17.5326 7.0461 17.7084V23.3725C7.0461 23.5483 7.19602 23.6947 7.37592 23.6947H17.3704C17.5503 23.6947 17.7002 23.8412 17.7002 24.017V29.3002C17.7002 29.476 17.5503 29.6225 17.3704 29.6225H0.339812C0.159912 29.6225 0.0099947 29.476 0.0099947 29.3002L0 29.3393Z" />
+      <path d="M35.2604 29.4077L34.261 24.5347C34.231 24.3882 34.0911 24.271 33.9312 24.271H28.6141C28.4542 24.271 28.3143 24.3784 28.2843 24.5347L27.3248 29.4077C27.2949 29.564 27.1549 29.6714 26.995 29.6714H20.3887C20.1688 29.6714 20.0089 29.4761 20.0689 29.271L27.5847 0.853027C27.6247 0.706543 27.7546 0.608887 27.9045 0.608887H34.7008C34.8507 0.608887 34.9806 0.706543 35.0206 0.853027L42.4964 29.271C42.5464 29.4761 42.3965 29.6714 42.1766 29.6714H35.5703C35.4104 29.6714 35.2804 29.564 35.2405 29.4077H35.2604ZM32.8518 17.6694C32.1722 13.8511 31.5325 10.6968 31.2327 8.04052C30.9828 10.6968 30.3832 13.8511 29.6635 17.7183L29.4936 18.6362H33.0217L32.8518 17.6792V17.6694Z" />
+      <path d="M54.4899 29.6713H47.9036C47.7537 29.6713 47.6237 29.5737 47.5838 29.4272L40.3078 0.999454C40.2578 0.794376 40.4177 0.59906 40.6276 0.59906H47.4938C47.6537 0.59906 47.7937 0.706486 47.8136 0.862736L49.3328 9.11468C50.0524 12.933 50.9519 18.4115 51.2417 21.3608C51.4916 18.4115 52.3911 12.933 53.0707 9.11468L54.5499 0.872496C54.5799 0.716246 54.7098 0.60882 54.8697 0.60882H61.696C61.9058 0.60882 62.0658 0.804136 62.0158 1.00921L54.7898 29.4369C54.7498 29.5834 54.6199 29.6811 54.47 29.6811L54.4899 29.6713Z" />
+      <path d="M96.1705 29.6713H90.1538C89.9939 29.6713 89.854 29.5541 89.824 29.3979L88.9345 23.9389C88.2149 19.5346 87.4853 14.6811 87.3154 12.142C87.1455 14.6713 86.4659 19.4955 85.6963 23.9389L84.7668 29.3979C84.7368 29.5541 84.5969 29.6713 84.437 29.6713H78.5003C78.3404 29.6713 78.2004 29.5541 78.1705 29.3979L73.1432 0.979923C73.1033 0.78461 73.2632 0.599064 73.4731 0.599064H79.7096C79.8795 0.599064 80.0194 0.726011 80.0394 0.882261L80.6791 5.91156C81.1488 9.52484 81.6585 14.4662 81.8684 18.1186C82.1682 14.5053 82.8878 9.5639 83.4375 5.95062L84.1971 0.8725C84.2171 0.71625 84.367 0.589304 84.5269 0.589304H90.1138C90.2838 0.589304 90.4237 0.70649 90.4437 0.86274L91.2532 5.94086C91.8529 9.55414 92.5225 14.4955 92.8223 18.1088C93.0322 14.4565 93.5919 9.55414 94.0117 5.9018L94.6114 0.8725C94.6313 0.706485 94.7713 0.579529 94.9412 0.579529H101.178C101.388 0.579529 101.548 0.765075 101.508 0.960387L96.4803 29.3783C96.4503 29.5346 96.3104 29.6518 96.1505 29.6518L96.1705 29.6713Z" />
+      <path d="M115.73 29.3783L114.74 24.5541C114.71 24.3881 114.56 24.2709 114.38 24.2709H109.113C108.943 24.2709 108.794 24.3881 108.754 24.5541L107.804 29.3783C107.774 29.5444 107.624 29.6615 107.444 29.6615H100.898C100.658 29.6615 100.488 29.4467 100.548 29.2221L108.054 0.862736C108.094 0.706486 108.244 0.59906 108.404 0.59906H115.15C115.32 0.59906 115.46 0.706486 115.5 0.862736L122.966 29.2221C123.026 29.4467 122.856 29.6615 122.616 29.6615H116.07C115.9 29.6615 115.75 29.5444 115.71 29.3783H115.73ZM113.321 17.6694C112.641 13.851 112.002 10.6967 111.702 8.04046C111.452 10.6967 110.852 13.851 110.133 17.7182L109.963 18.6362H113.491L113.321 17.6791V17.6694Z" />
+      <path d="M134.239 30.1205C129.732 30.1205 127.073 28.3529 124.655 25.306C124.545 25.1693 124.565 24.9642 124.695 24.8568L129.062 21.0091C129.202 20.8919 129.422 20.9115 129.542 21.0482C131.431 23.2064 132.98 24.3197 134.369 24.3197C135.859 24.3197 136.918 23.5677 136.918 21.9955C136.918 20.4232 136.448 19.3783 133.09 17.9232C127.183 15.3939 125.015 13.1869 125.015 8.62634C125.015 4.06579 128.543 0.159546 134.239 0.159546C138.697 0.159546 140.996 1.69274 143.384 4.515C143.494 4.65172 143.484 4.8568 143.354 4.97399L138.917 8.86072C138.777 8.9779 138.547 8.9486 138.427 8.81189C136.558 6.65368 135.829 5.97009 134.03 5.97009C132.67 5.97009 131.901 6.96618 131.901 8.05017C131.901 9.58337 132.67 10.4623 135.679 11.7416C141.665 14.3197 143.884 16.722 143.884 21.5853C143.884 27.0248 139.766 30.14 134.239 30.14V30.1205Z" />
+      <path d="M160.555 29.3295V17.8354C160.555 17.6498 160.405 17.4936 160.205 17.4936H154.908C154.718 17.4936 154.558 17.6401 154.558 17.8354V29.3295C154.558 29.5151 154.408 29.6713 154.208 29.6713H147.712C147.522 29.6713 147.362 29.5248 147.362 29.3295V0.940863C147.362 0.755316 147.512 0.59906 147.712 0.59906H154.208C154.398 0.59906 154.558 0.74555 154.558 0.940863V11.1069C154.558 11.2924 154.708 11.4487 154.908 11.4487H160.205C160.395 11.4487 160.555 11.3022 160.555 11.1069V0.940863C160.555 0.755316 160.705 0.59906 160.905 0.59906H167.401C167.591 0.59906 167.751 0.74555 167.751 0.940863V29.3295C167.751 29.5151 167.601 29.6713 167.401 29.6713H160.905C160.715 29.6713 160.555 29.5248 160.555 29.3295Z" />
+      <path d="M190.094 30.1205C183.127 30.1205 179.599 24.9252 179.599 15.1693C179.599 5.41345 183.547 0.140015 190.184 0.140015C196.31 0.140015 198.509 3.49938 199.678 8.88024C199.718 9.05602 199.608 9.23181 199.438 9.28063L193.222 10.931C193.032 10.9799 192.832 10.8431 192.802 10.6576C192.312 7.65955 191.813 6.12634 190.144 6.12634C187.845 6.12634 186.955 8.48963 186.955 15.101C186.955 21.7123 187.845 24.1537 190.233 24.1537C191.833 24.1537 192.402 23.0697 193.162 19.7884C193.202 19.6029 193.412 19.4759 193.602 19.5345L199.538 21.517C199.708 21.5756 199.798 21.7513 199.758 21.9271C198.419 27.015 195.9 30.1302 190.104 30.1302L190.094 30.1205Z" />
+      <path d="M212.995 30.1205C206.319 30.1205 202.411 25.433 202.411 15.1693C202.411 4.90564 206.409 0.140015 213.075 0.140015C219.741 0.140015 223.699 4.87634 223.699 15.0912C223.699 25.306 219.701 30.1205 212.985 30.1205H212.995ZM213.045 6.12634C210.796 6.12634 209.727 8.07947 209.727 15.101C209.727 22.1224 210.876 24.1537 213.085 24.1537C215.294 24.1537 216.403 22.2006 216.403 15.1888C216.403 8.17712 215.254 6.1361 213.045 6.1361V6.12634Z" />
+      <path d="M228.927 30.0642C226.552 30.0642 224.801 28.399 224.801 26.0795C224.801 23.76 226.536 22.1393 228.927 22.1393C231.317 22.1393 233.006 23.76 233.006 26.0795C233.006 28.399 231.301 30.0642 228.927 30.0642Z" />
+    </svg>
+  );
+}
+
+export function Footer() {
+  const pathname = usePathname();
+  const rafIdRef = useRef<number | null>(null);
+
+  const animateScrollTo = useCallback((targetY: number) => {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    if (Math.abs(distance) < 2) return;
+
+    if (rafIdRef.current) {
+      window.cancelAnimationFrame(rafIdRef.current);
+    }
+
+    const duration = Math.min(700, Math.max(360, Math.abs(distance) * 0.22));
+    const startTime = performance.now();
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = easeOutQuart(progress);
+      window.scrollTo(0, startY + distance * eased);
+
+      if (progress < 1) {
+        rafIdRef.current = window.requestAnimationFrame(tick);
+      } else {
+        rafIdRef.current = null;
+      }
+    };
+
+    rafIdRef.current = window.requestAnimationFrame(tick);
+  }, []);
+
+  const handleBackToTopClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (pathname !== "/") return;
+      e.preventDefault();
+      animateScrollTo(0);
+    },
+    [animateScrollTo, pathname],
+  );
+
+  return (
+    <footer
+      className="bg-eav-black"
+    >
+      {/* Combined CTA block */}
+      <div className="mx-auto max-w-[1400px] flex flex-col items-start justify-center text-left sm:items-center sm:text-center px-5 sm:px-8 pt-16 sm:pt-20 lg:pt-24 pb-18 sm:pb-24">
+
+        <h2
+          className="font-heading font-bold uppercase leading-[1] tracking-tight text-eav-white"
+          style={{ fontSize: "clamp(2.5rem, 8vw, 3.5rem)" }}
+        >
+          Ready to see your 
+          <br />
+          concrete again?
+        </h2>
+
+        <p className="font-body text-base sm:text-base max-w-md mt-4 text-eav-cream">
+          Tell us what you need cleaned, and we&apos;ll give you a fast, transparent estimate - no calls, no pressure.
+        </p>
+
+        <div className="mt-7 sm:mt-8">
+          <a
+            href="/#top"
+            onClick={handleBackToTopClick}
+            className="inline-block bg-eav-white text-eav-black font-body font-semibold text-sm sm:text-base px-8 py-4 rounded-sm hover:bg-eav-white/90 active:scale-[0.98] transition-all"
+          >
+            Get an Estimate
+          </a>
+        </div>
+      </div>
+
+      {/* Divider above phone/email row */}
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+        <div className="border-t border-eav-cream/15" />
+      </div>
+
+      {/* Utility row */}
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-24 flex items-start sm:items-center justify-between gap-6">
+        <ul className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-6 text-[16px] font-body">
+          <li>
+            <a
+              href="mailto:hello@eavwash.co"
+              className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
+                <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
+                <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
+              </svg>
+              hello@eavwash.co
+            </a>
+          </li>
+          <li>
+            <a
+              href="tel:+14703009995"
+              className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
+                <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clipRule="evenodd" />
+              </svg>
+              (470) 300-9995
+            </a>
+          </li>
+          <li>
+            <a
+              href="sms:+14703009995"
+              className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
+                <path fillRule="evenodd" d="M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902ZM6 8a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm3 1a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" clipRule="evenodd" />
+              </svg>
+              Send us a text
+            </a>
+          </li>
+        </ul>
+        <a
+          href="/#top"
+          onClick={handleBackToTopClick}
+          className="flex items-center gap-2 text-[16px] text-eav-cream font-body hover:text-eav-cream/70 transition-colors"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
+            <path fillRule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clipRule="evenodd" />
+          </svg>
+          Back to top
+        </a>
+      </div>
+
+      {/* Giant wordmark */}
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 text-eav-cream pb-6 sm:pb-8">
+        <Wordmark variant="outline" />
+      </div>
+
+      {/* Utility row — bottom */}
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[12px] text-eav-cream/60 font-body">
+        <span>
+          &copy; {new Date().getFullYear()} EAV Wash Co., LLC. All rights reserved.
+          <span className="mx-2">·</span>
+          With{" "}
+          <svg viewBox="0 0 20 20" fill="currentColor" className="inline w-[14px] h-[14px] text-eav-orange -mt-px mx-0.5">
+            <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.723.723 0 0 1-.692 0h-.002Z" />
+          </svg>{" "}
+          from Atlanta
+        </span>
+        <Link href="/privacy" className="hover:text-eav-cream/50 transition-colors">
+          Privacy
+        </Link>
+      </div>
+    </footer>
+  );
+}

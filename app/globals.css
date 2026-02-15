@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────
+ * EAV WASH CO. — DESIGN TOKENS
+ *
+ * Brand palette, typography, and motifs extracted from
+ * business cards, yard signs, and logo assets.
+ * ───────────────────────────────────────────────────────── */
+
+@theme {
+  --color-eav-black: #1A1A1A;
+  --color-eav-orange: #FB532C;
+  --color-eav-cream: #F0E8D8;
+  --color-eav-white: #FFFFFF;
+  --color-eav-gray: #2A2A2A;
+  --color-eav-muted: #8A8A8A;
+
+  --font-heading: var(--font-interstate), "Arial Narrow", sans-serif;
+  --font-body: var(--font-uncut-sans), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ─── Base ──────────────────────────────────────────────── */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-eav-black);
+  color: var(--color-eav-cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-eav-orange);
+  color: var(--color-eav-black);
+}
+
+/* ─── Focus styles ──────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--color-eav-orange);
+  outline-offset: 2px;
+}
+
+/* ─── Hero film-grain overlay ────────────────────────────
+ * SVG feTurbulence noise baked into a data-URI.
+ * Covers the hero section at low opacity for subtle grit.
+ * ──────────────────────────────────────────────────────── */
+
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }
