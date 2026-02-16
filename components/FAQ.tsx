@@ -54,7 +54,7 @@ function FAQItem({
         aria-expanded={isOpen}
       >
         <span
-          className="text-lg sm:text-xl font-body font-bold tracking-tight text-eav-black group-hover:text-eav-orange transition-colors leading-[1.1]"
+          className="text-lg sm:text-xl font-body font-bold tracking-tight text-eav-black group-hover:text-eav-orange transition-colors leading-[1.3]"
         >
           {faq.question}
         </span>

@@ -45,6 +45,7 @@ const REVIEW: ReviewData = {
 
 export function Hero() {
   const [stage, setStage] = useState(0);
+  const [showDesktopTexture, setShowDesktopTexture] = useState(false);
   const [estimateSuccess, setEstimateSuccess] = useState(false);
   const [estimateFormKey, setEstimateFormKey] = useState(0);
 
@@ -59,6 +60,16 @@ export function Hero() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const updateTextureVisibility = () => setShowDesktopTexture(media.matches);
+
+    updateTextureVisibility();
+    media.addEventListener("change", updateTextureVisibility);
+
+    return () => media.removeEventListener("change", updateTextureVisibility);
+  }, []);
+
   return (
     <section
       id="top"
@@ -66,17 +77,19 @@ export function Hero() {
       data-header-theme="dark"
       className="relative min-h-dvh flex items-center overflow-hidden bg-eav-black"
     >
-      <picture className="absolute inset-0 z-0 block pointer-events-none select-none">
-        <source srcSet={asphaltDarkAvif.src} type="image/avif" />
-        <img
-          src={asphaltDarkJpg.src}
-          alt=""
-          aria-hidden
-          className="h-full w-full object-cover opacity-20"
-          loading="eager"
-          decoding="async"
-        />
-      </picture>
+      {showDesktopTexture && (
+        <picture className="absolute inset-0 z-0 block pointer-events-none select-none">
+          <source srcSet={asphaltDarkAvif.src} type="image/avif" />
+          <img
+            src={asphaltDarkJpg.src}
+            alt=""
+            aria-hidden
+            className="h-full w-full object-cover opacity-20"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+      )}
 
       {/* ── Content ───────────────────────────────────────── */}
       <div className="relative z-10 mx-auto max-w-[1400px] w-full px-5 sm:px-8 py-24 sm:py-20 lg:py-32">
