@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { ArrowUp, Heart, Mail, MessageText, Phone } from "iconoir-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,6 +41,12 @@ export function Footer() {
   const rafIdRef = useRef<number | null>(null);
 
   const animateScrollTo = useCallback((targetY: number) => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      window.scrollTo(0, targetY);
+      return;
+    }
+
     const startY = window.scrollY;
     const distance = targetY - startY;
     if (Math.abs(distance) < 2) return;
@@ -120,10 +127,7 @@ export function Footer() {
               href="mailto:hello@eavwash.co"
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
-                <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
-                <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
-              </svg>
+              <Mail className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
               hello@eavwash.co
             </a>
           </li>
@@ -132,9 +136,7 @@ export function Footer() {
               href="tel:+14703009995"
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
-                <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clipRule="evenodd" />
-              </svg>
+              <Phone className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
               (470) 300-9995
             </a>
           </li>
@@ -143,9 +145,7 @@ export function Footer() {
               href="sms:+14703009995"
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
-                <path fillRule="evenodd" d="M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902ZM6 8a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm3 1a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" clipRule="evenodd" />
-              </svg>
+              <MessageText className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
               Send us a text
             </a>
           </li>
@@ -155,9 +155,7 @@ export function Footer() {
           onClick={handleBackToTopClick}
           className="flex items-center gap-2 text-[16px] text-eav-cream font-body hover:text-eav-cream/70 transition-colors"
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
-            <path fillRule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clipRule="evenodd" />
-          </svg>
+          <ArrowUp className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
           Back to top
         </a>
       </div>
@@ -176,9 +174,7 @@ export function Footer() {
           <span className="hidden sm:inline mx-2">·</span>
           <span className="block sm:inline">
             With{" "}
-            <svg viewBox="0 0 20 20" fill="currentColor" className="inline w-[14px] h-[14px] text-eav-orange -mt-px mx-0.5">
-              <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-1.162-.682 22.045 22.045 0 0 1-2.582-1.9C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 0 1 8-2.828A4.5 4.5 0 0 1 18 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 0 1-3.744 2.582l-.019.01-.005.003h-.002a.723.723 0 0 1-.692 0h-.002Z" />
-            </svg>{" "}
+            <Heart className="mx-0.5 -mt-px inline h-[14px] w-[14px] text-eav-orange" aria-hidden="true" />{" "}
             from Atlanta
           </span>
         </span>

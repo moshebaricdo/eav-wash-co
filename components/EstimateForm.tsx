@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check } from "iconoir-react";
 
 /* ─────────────────────────────────────────────────────────
  * ESTIMATE FORM — MULTI-STEP FLOW
@@ -172,15 +173,7 @@ function SurfaceTileSelect({
               }`}
               aria-hidden="true"
             >
-              <svg viewBox="0 0 16 16" fill="none" className="h-3 w-3">
-                <path
-                  d="M3 8.5L6.3 11.7L13 5"
-                  strokeWidth="2.5"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <Check className="h-3 w-3" aria-hidden="true" />
             </span>
           </button>
         );
@@ -469,24 +462,6 @@ function AddressAutocomplete({
       />
       {dropdown}
     </div>
-  );
-}
-
-/* ─── Arrow icons (proper arrows, not chevrons) ──────────── */
-
-function ArrowLeft({ className = "" }: { className?: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={className}>
-      <path d="M13 8H3M3 8L7 4M3 8L7 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ArrowRight({ className = "" }: { className?: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={className}>
-      <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 
@@ -817,7 +792,7 @@ export function EstimateForm({
             `}
           >
             Continue
-            <ArrowRight />
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         ) : (
           <div className="flex items-stretch gap-3">
@@ -831,7 +806,7 @@ export function EstimateForm({
               `}
               aria-label="Go back"
             >
-              <ArrowLeft />
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             </button>
             <button
               type="button"
@@ -847,7 +822,7 @@ export function EstimateForm({
               `}
             >
               {submitting ? "Sending..." : "Send Request"}
-              <ArrowRight />
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         )}

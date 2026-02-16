@@ -116,6 +116,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${interstate.variable} ${uncutSans.variable}`}>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-eav-orange focus:px-4 focus:py-2 focus:font-body focus:font-semibold focus:text-eav-white focus:outline-none focus:ring-2 focus:ring-eav-white focus:ring-offset-2 focus:ring-offset-eav-black"
+        >
+          Skip to content
+        </a>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           strategy="afterInteractive"
@@ -129,7 +135,9 @@ export default function RootLayout({
           `}
         </Script>
         <Header />
-        <main>{children}</main>
+        <main id="main-content" className="scroll-mt-24" tabIndex={-1}>
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

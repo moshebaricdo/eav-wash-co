@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useId, useRef, useState } from "react";
+import { motion, useInView, AnimatePresence, useReducedMotion } from "framer-motion";
 import { BUSINESS, FAQS } from "@/app/seo";
 
 const COST_FAQ_QUESTION = "How much does pressure washing cost in the Atlanta area?";
@@ -30,28 +30,40 @@ function FAQItem({
   isOpen,
   onToggle,
   isInView,
+  buttonId,
+  panelId,
+  prefersReducedMotion,
 }: {
   faq: (typeof FAQS)[number];
   index: number;
   isOpen: boolean;
   onToggle: () => void;
   isInView: boolean;
+  buttonId: string;
+  panelId: string;
+  prefersReducedMotion: boolean;
 }) {
+  const itemTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { ...ANIM.spring, delay: 0.6 + index * 0.1 };
+
   return (
     <motion.div
       className="border-b border-eav-black/10"
-      initial={{ opacity: 0, y: ANIM.offsetY }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: ANIM.offsetY }}
       animate={{
-        opacity: isInView ? 1 : 0,
-        y: isInView ? 0 : ANIM.offsetY,
+        opacity: prefersReducedMotion ? 1 : isInView ? 1 : 0,
+        y: prefersReducedMotion ? 0 : isInView ? 0 : ANIM.offsetY,
       }}
-      transition={{ ...ANIM.spring, delay: 0.6 + index * 0.1 }}
+      transition={itemTransition}
     >
       <button
+        id={buttonId}
         type="button"
         className="w-full flex items-center justify-between gap-6 py-4 sm:py-4 text-left cursor-pointer group"
         onClick={onToggle}
         aria-expanded={isOpen}
+        aria-controls={panelId}
       >
         <span
           className="text-lg sm:text-xl font-body font-bold tracking-tight text-eav-black group-hover:text-eav-orange transition-colors leading-[1.3]"
@@ -62,7 +74,7 @@ function FAQItem({
           className="flex-shrink-0 text-eav-orange leading-none select-none"
           style={{ fontSize: "clamp(1.5rem, 2.5vw, 2rem)" }}
           animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={ANIM.spring}
+          transition={prefersReducedMotion ? { duration: 0 } : ANIM.spring}
         >
           +
         </motion.span>
@@ -72,10 +84,17 @@ function FAQItem({
         {isOpen && (
           <motion.div
             key="content"
+            id={panelId}
+            role="region"
+            aria-labelledby={buttonId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+            }
             className="overflow-hidden"
           >
             <div className="font-body text-eav-black/80 text-base leading-relaxed pb-4 max-w-6xl space-y-4">
@@ -122,6 +141,8 @@ function FAQItem({
 
 export function FAQ() {
   const ref = useRef<HTMLDivElement>(null);
+  const faqId = useId();
+  const prefersReducedMotion = useReducedMotion() ?? false;
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -139,9 +160,9 @@ export function FAQ() {
           <motion.p
             className="font-heading font-bold uppercase text-eav-black leading-[1] tracking-tight"
             style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isInView ? 1 : 0 }}
-            transition={{ ...ANIM.spring, delay: 0.2 }}
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: prefersReducedMotion ? 1 : isInView ? 1 : 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { ...ANIM.spring, delay: 0.2 }}
           >
             FREQUENTLY ASKED QUESTIONS
           </motion.p>
@@ -160,6 +181,9 @@ export function FAQ() {
               isOpen={openIndex === i}
               onToggle={() => setOpenIndex(openIndex === i ? null : i)}
               isInView={isInView}
+              buttonId={`${faqId}-question-${i}`}
+              panelId={`${faqId}-panel-${i}`}
+              prefersReducedMotion={prefersReducedMotion}
             />
           ))}
         </div>

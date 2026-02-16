@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback, useEffect } from "react";
+import { ArrowSeparate } from "iconoir-react";
 import Image, { type StaticImageData } from "next/image";
 
 /* ─────────────────────────────────────────────────────────
@@ -32,21 +33,26 @@ export function BeforeAfterSlider({
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50); // percentage 0–100
   const isDragging = useRef(false);
+  const roundedPosition = Math.round(position);
+
+  const clampPosition = useCallback((value: number) => {
+    return Math.min(100, Math.max(0, value));
+  }, []);
 
   /* ── Resolve pointer X to a 0–100 percentage ────────── */
   const updatePosition = useCallback((clientX: number) => {
     const el = containerRef.current;
     if (!el) return;
     const { left, width } = el.getBoundingClientRect();
-    const pct = Math.min(100, Math.max(0, ((clientX - left) / width) * 100));
+    const pct = clampPosition(((clientX - left) / width) * 100);
     setPosition(pct);
-  }, []);
+  }, [clampPosition]);
 
   /* ── Pointer events ─────────────────────────────────── */
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       isDragging.current = true;
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      e.currentTarget.setPointerCapture(e.pointerId);
       updatePosition(e.clientX);
     },
     [updatePosition],
@@ -63,6 +69,38 @@ export function BeforeAfterSlider({
   const onPointerUp = useCallback(() => {
     isDragging.current = false;
   }, []);
+
+  const nudgePosition = useCallback(
+    (delta: number) => {
+      setPosition((current) => clampPosition(current + delta));
+    },
+    [clampPosition],
+  );
+
+  const onHandleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+        e.preventDefault();
+        nudgePosition(-2);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+        e.preventDefault();
+        nudgePosition(2);
+      } else if (e.key === "PageDown") {
+        e.preventDefault();
+        nudgePosition(-10);
+      } else if (e.key === "PageUp") {
+        e.preventDefault();
+        nudgePosition(10);
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        setPosition(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        setPosition(100);
+      }
+    },
+    [nudgePosition],
+  );
 
   /* Prevent image drag ghost */
   useEffect(() => {
@@ -119,39 +157,29 @@ export function BeforeAfterSlider({
         <div className="absolute top-0 bottom-0 -translate-x-1/2 w-[2px] bg-eav-cream" />
 
         {/* Drag grip */}
-        <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-black shadow-lg flex items-center justify-center cursor-ew-resize">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            className="text-eav-white"
-          >
-            <path
-              d="M4.5 3L1.5 8L4.5 13"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M11.5 3L14.5 8L11.5 13"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <div
+          role="slider"
+          aria-orientation="horizontal"
+          tabIndex={0}
+          aria-label="Before and after comparison position"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={roundedPosition}
+          aria-valuetext={`Before ${roundedPosition}% / After ${100 - roundedPosition}%`}
+          onKeyDown={onHandleKeyDown}
+          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-eav-black rounded-sm shadow-lg flex items-center justify-center cursor-ew-resize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-eav-orange focus-visible:ring-offset-2 focus-visible:ring-offset-eav-black"
+        >
+          <ArrowSeparate className="h-5 w-5 text-eav-white" aria-hidden="true" />
         </div>
       </div>
 
       {/* ── Labels ─────────────────────────────────────── */}
       {showLabels && (
         <>
-          <span className="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-sm bg-eav-black text-white text-[12px] font-heading font-bold uppercase tracking-[0.1em]">
+          <span className="absolute bottom-3 left-3 z-10 px-2.5 py-1 rounded-sm bg-eav-black/70 text-white text-[12px] font-heading font-bold uppercase tracking-[0.1em]">
             Before
           </span>
-          <span className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-sm bg-eav-orange text-white text-[12px] font-heading font-bold uppercase tracking-[0.1em]">
+          <span className="absolute bottom-3 right-3 z-10 px-2.5 py-1 rounded-sm bg-eav-orange/90 text-white text-[12px] font-heading font-bold uppercase tracking-[0.1em]">
             After
           </span>
         </>

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Airplane, Check, MessageText, Phone } from "iconoir-react";
+import Image from "next/image";
 import { EstimateForm, type ReviewData } from "@/components/EstimateForm";
-import asphaltDarkAvif from "@/assets/background/asphalt-dark.avif";
 import asphaltDarkJpg from "@/assets/background/asphalt-dark.jpg";
 
 
@@ -41,6 +42,8 @@ const REVIEW: ReviewData = {
   location: "Grant Park",
 };
 
+const ESTIMATE_FORM_UNAVAILABLE = true;
+
 /* ─── Component ────────────────────────────────────────── */
 
 export function Hero() {
@@ -48,8 +51,24 @@ export function Hero() {
   const [showDesktopTexture, setShowDesktopTexture] = useState(false);
   const [estimateSuccess, setEstimateSuccess] = useState(false);
   const [estimateFormKey, setEstimateFormKey] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
+
+  const getEntranceOpacity = (minStage: number) => {
+    return prefersReducedMotion ? 1 : stage >= minStage ? 1 : 0;
+  };
+
+  const getEntranceY = (minStage: number) => {
+    return prefersReducedMotion ? 0 : stage >= minStage ? 0 : ENTRANCE.offsetY;
+  };
+
+  const entranceTransition = prefersReducedMotion ? { duration: 0 } : ENTRANCE.spring;
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setStage(4);
+      return;
+    }
+
     const timers: NodeJS.Timeout[] = [];
 
     timers.push(setTimeout(() => setStage(1), TIMING.eyebrow));
@@ -58,7 +77,7 @@ export function Hero() {
     timers.push(setTimeout(() => setStage(4), TIMING.formCard));
 
     return () => timers.forEach(clearTimeout);
-  }, []);
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 768px)");
@@ -78,17 +97,17 @@ export function Hero() {
       className="relative min-h-dvh flex items-center overflow-hidden bg-eav-black"
     >
       {showDesktopTexture && (
-        <picture className="absolute inset-0 z-0 block pointer-events-none select-none">
-          <source srcSet={asphaltDarkAvif.src} type="image/avif" />
-          <img
-            src={asphaltDarkJpg.src}
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <Image
+            src={asphaltDarkJpg}
             alt=""
             aria-hidden
-            className="h-full w-full object-cover opacity-20"
-            loading="eager"
-            decoding="async"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-20"
           />
-        </picture>
+        </div>
       )}
 
       {/* ── Content ───────────────────────────────────────── */}
@@ -101,12 +120,12 @@ export function Hero() {
             {/* Headline */}
             <motion.p
               className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange-bright text-[14px] mb-8"
-              initial={{ opacity: 0, y: ENTRANCE.offsetY }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: ENTRANCE.offsetY }}
               animate={{
-                opacity: stage >= 1 ? 1 : 0,
-                y: stage >= 1 ? 0 : ENTRANCE.offsetY,
+                opacity: getEntranceOpacity(1),
+                y: getEntranceY(1),
               }}
-              transition={ENTRANCE.spring}
+              transition={entranceTransition}
             >
               PRESSURE WASHING IN ATLANTA
             </motion.p>
@@ -115,24 +134,24 @@ export function Hero() {
               id="hero-heading"
               className="font-heading font-bold uppercase text-eav-white leading-[1] tracking-tight"
               style={{ fontSize: "clamp(3.2rem, 8vw, 5rem)" }}
-              initial={{ opacity: 0, y: ENTRANCE.offsetY }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: ENTRANCE.offsetY }}
               animate={{
-                opacity: stage >= 2 ? 1 : 0,
-                y: stage >= 2 ? 0 : ENTRANCE.offsetY,
+                opacity: getEntranceOpacity(2),
+                y: getEntranceY(2),
               }}
-              transition={ENTRANCE.spring}
+              transition={entranceTransition}
             >
               Make your concrete feel like new again.
             </motion.h1>
 
             {/* Subhead + phone CTA */}
             <motion.div
-              initial={{ opacity: 0, y: ENTRANCE.offsetY }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: ENTRANCE.offsetY }}
               animate={{
-                opacity: stage >= 3 ? 1 : 0,
-                y: stage >= 3 ? 0 : ENTRANCE.offsetY,
+                opacity: getEntranceOpacity(3),
+                y: getEntranceY(3),
               }}
-              transition={ENTRANCE.spring}
+              transition={entranceTransition}
               className="mt-8 sm:mt-9"
             >
               <p className="font-body text-eav-cream text-base sm:text-lg max-w-xl">
@@ -146,9 +165,7 @@ export function Hero() {
                   href="sms:+14703009995"
                   className="inline-flex items-center gap-2.5 bg-eav-orange text-eav-white font-body font-semibold text-sm sm:text-base px-7 py-3.5 rounded-sm hover:brightness-120 active:scale-[0.98] transition-all"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] shrink-0">
-                    <path fillRule="evenodd" d="M3.43 2.524A41.29 41.29 0 0 1 10 2c2.236 0 4.43.18 6.57.524 1.437.231 2.43 1.49 2.43 2.902v5.148c0 1.413-.993 2.67-2.43 2.902a41.102 41.102 0 0 1-3.55.414c-.28.02-.521.18-.643.413l-1.712 3.293a.75.75 0 0 1-1.33 0l-1.713-3.293a.783.783 0 0 0-.642-.413 41.108 41.108 0 0 1-3.55-.414C1.993 13.245 1 11.986 1 10.574V5.426c0-1.413.993-2.67 2.43-2.902ZM6 8a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm3 1a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" clipRule="evenodd" />
-                  </svg>
+                  <MessageText className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
                   Send us a Text
                 </a>
 
@@ -157,9 +174,7 @@ export function Hero() {
                   href="tel:+14703009995"
                   className="flex items-center gap-2 text-eav-cream font-body text-base font-semibold hover:text-eav-cream/80 transition-colors"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-[18px] h-[18px] text-eav-orange shrink-0">
-                    <path fillRule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clipRule="evenodd" />
-                  </svg>
+                  <Phone className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
                   (470) 300-9995
                 </a>
               </div>
@@ -190,12 +205,12 @@ export function Hero() {
           <motion.div
             id="estimate-form"
             className="scroll-mt-28"
-            initial={{ opacity: 0, y: ENTRANCE.offsetY }}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: ENTRANCE.offsetY }}
             animate={{
-              opacity: stage >= 4 ? 1 : 0,
-              y: stage >= 4 ? 0 : ENTRANCE.offsetY,
+              opacity: getEntranceOpacity(4),
+              y: getEntranceY(4),
             }}
-            transition={ENTRANCE.spring}
+            transition={entranceTransition}
           >
             <div className="relative bg-eav-cream rounded-sm overflow-hidden">
               {/* Card header */}
@@ -206,15 +221,17 @@ export function Hero() {
               </div>
 
               {/* Embedded form — manages its own px so progress bar bleeds */}
-              <EstimateForm
-                key={estimateFormKey}
-                variant="light"
-                inCard
-                onSubmitted={() => setEstimateSuccess(true)}
-              />
+              <div className={ESTIMATE_FORM_UNAVAILABLE ? "pointer-events-none select-none" : ""}>
+                <EstimateForm
+                  key={estimateFormKey}
+                  variant="light"
+                  inCard
+                  onSubmitted={() => setEstimateSuccess(true)}
+                />
+              </div>
 
               <AnimatePresence>
-                {estimateSuccess && (
+                {estimateSuccess && !ESTIMATE_FORM_UNAVAILABLE && (
                   <motion.div
                     className="absolute inset-0 z-20 origin-bottom bg-eav-orange"
                     initial={{ scaleY: 0 }}
@@ -229,20 +246,7 @@ export function Hero() {
                       transition={{ type: "spring", stiffness: 280, damping: 26, delay: 0.16 }}
                     >
                       <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-eav-white/90">
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          className="h-7 w-7"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M4 10.5L8.2 14.6L16 6.8"
-                            stroke="currentColor"
-                            strokeWidth="2.2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <Check className="h-7 w-7" aria-hidden="true" />
                       </span>
                       <p className="mt-5 font-heading font-bold uppercase tracking-[0.08em] text-[24px]">
                         Request Sent
@@ -260,6 +264,35 @@ export function Hero() {
                       >
                         Submit Another Request
                       </button>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <AnimatePresence>
+                {ESTIMATE_FORM_UNAVAILABLE && (
+                  <motion.div
+                    className="absolute inset-0 z-30 bg-eav-cream/90"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-eav-black"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ type: "spring", stiffness: 280, damping: 26, delay: 0.12 }}
+                    >
+                      <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-eav-black/80">
+                        <Airplane className="h-7 w-7" aria-hidden="true" />
+                      </span>
+                      <p className="mt-5 font-heading font-bold uppercase tracking-[0.08em] text-[24px]">
+                        We&apos;ll Be Back Soon
+                      </p>
+                      <p className="mt-2 max-w-[40ch] font-body text-sm text-eav-black/70">
+                        We&apos;re temporarily pausing new estimate requests while we travel. We&apos;ll be back March 9th!
+                      </p>
                     </motion.div>
                   </motion.div>
                 )}

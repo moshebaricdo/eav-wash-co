@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image, { type StaticImageData } from "next/image";
 
 import { BeforeAfterSlider } from "@/components/BeforeAfterSlider";
@@ -11,6 +11,8 @@ import patioDirty1 from "@/assets/before-afters/patio-dirty-1.avif";
 import patioClean1 from "@/assets/before-afters/patio-clean-1.avif";
 import deckDirty1 from "@/assets/before-afters/deck-dirty-1.avif";
 import deckClean1 from "@/assets/before-afters/deck-clean-1.avif";
+import walkwayBefore from "@/assets/before-afters/walkway-before.avif";
+import walkwayAfter from "@/assets/before-afters/walkway-after.avif";
 
 /* ─────────────────────────────────────────────────────────
  * SERVICES — SCROLL-DRIVEN STORYBOARD
@@ -35,14 +37,16 @@ import deckClean1 from "@/assets/before-afters/deck-clean-1.avif";
 
 const SERVICES: {
   name: string;
+  descriptionLead: string;
   description: string;
   beforeAfters: { label: string; before: StaticImageData; after: StaticImageData; aspect: string }[];
   images: { label: string; aspect: string; src?: StaticImageData }[];
 }[] = [
   {
     name: "Driveway",
+    descriptionLead: "Driveways",
     description:
-      "Your driveway takes the brunt of daily life. Dirt, organic growth, cars, oil drips, tire marks, and good old Atlanta humidity all leave their mark over time, especially on untreated concrete. We use professional surface cleaning equipment and targeted treatments to break down buildup at the source while protecting the integrity of the slab. You’ll be surprised how much more fresh your property feels with a clean, bright driveway.",
+      "take the brunt of daily life. Dirt, organic growth, cars, oil drips, tire marks, and good old Atlanta humidity all leave their mark over time, especially on untreated concrete. We use professional surface cleaning equipment and targeted treatments to break down buildup at the source while protecting the integrity of the slab. You’ll be surprised how much more fresh your property feels with a clean, bright driveway.",
     beforeAfters: [
       { label: "Driveway", before: drivewayDirty1, after: drivewayClean1, aspect: "aspect-[16/9]" },
     ],
@@ -50,8 +54,9 @@ const SERVICES: {
   },
   {
     name: "Patio & Deck",
+    descriptionLead: "Decks and patios",
     description:
-      "Decks and patios deal with constant exposure to heat, moisture, and shade. That mix is the perfect recipe for algae, mildew, and surface staining. Each material requires a different approach. Concrete and pavers can handle deeper, high-pressure surface cleaning, while wood demands a more gentle approach and special chemical solutions. We adjust our methods based on the material we’re working with so the space is refreshed without unnecessary wear and tear. The result is a patio or deck that feels clean, solid underfoot, and ready to show off again.",
+      "deal with constant exposure to heat, moisture, and shade. That mix is the perfect recipe for algae, mildew, and surface staining. Each material requires a different approach. Concrete and pavers can handle deeper, high-pressure surface cleaning, while wood demands a more gentle approach and special chemical solutions. We adjust our methods based on the material we’re working with so the space is refreshed without unnecessary wear and tear. The result is a patio or deck that feels clean, solid underfoot, and ready to show off again.",
     beforeAfters: [
       { label: "Patio", before: patioDirty1, after: patioClean1, aspect: "aspect-[4/3]" },
       { label: "Deck", before: deckDirty1, after: deckClean1, aspect: "aspect-[4/3]" },
@@ -60,9 +65,12 @@ const SERVICES: {
   },
   {
     name: "Walkway",
+    descriptionLead: "Walkways and sidewalks",
     description:
-      "Walkways and sidewalks accumulate grime gradually, which is why many homeowners don’t notice how dark they’ve become until they’re cleaned. Runoff, foot traffic, and organic growth create uneven discoloration and slick spots, especially in shaded areas. We restore a more even, consistent surface, from your portion of the sidewalk right up to your doorstep, improving both appearance and traction. It’s a small upgrade that noticeably sharpens the overall look of a property.",
-    beforeAfters: [],
+      "accumulate grime gradually, which is why many homeowners don’t notice how dark they’ve become until they’re cleaned. Runoff, foot traffic, and organic growth create uneven discoloration and slick spots, especially in shaded areas. We restore a more even, consistent surface, from your portion of the sidewalk right up to your doorstep, improving both appearance and traction. It’s a small upgrade that noticeably sharpens the overall look of a property.",
+    beforeAfters: [
+      { label: "Walkway", before: walkwayBefore, after: walkwayAfter, aspect: "aspect-[16/9]" },
+    ],
     images: [],
   },
 ];
@@ -96,6 +104,11 @@ export function Services() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const activeIndexRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const navTransition = prefersReducedMotion ? { duration: 0 } : NAV.spring;
+  const panelTransition = prefersReducedMotion ? { duration: 0 } : PANEL.spring;
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
@@ -111,7 +124,7 @@ export function Services() {
    * becomes "active," lighting up its name on the left.
    * ──────────────────────────────────────────────────── */
   useEffect(() => {
-    const onScroll = () => {
+    const updateActivePanel = () => {
       const vpCenter = window.innerHeight / 2;
       let best = 0;
       let bestDist = Infinity;
@@ -126,21 +139,37 @@ export function Services() {
         }
       });
 
-      setActiveIndex(best);
+      if (best !== activeIndexRef.current) {
+        activeIndexRef.current = best;
+        setActiveIndex(best);
+      }
+    };
+
+    const onScroll = () => {
+      if (rafIdRef.current !== null) return;
+      rafIdRef.current = window.requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        updateActivePanel();
+      });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll(); // set initial state
-    return () => window.removeEventListener("scroll", onScroll);
+    updateActivePanel(); // set initial state
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+      }
+    };
   }, []);
 
   /* ── Click-to-scroll on nav names ─────────────────── */
   const scrollTo = useCallback((i: number) => {
     panelRefs.current[i]?.scrollIntoView({
-      behavior: "smooth",
+      behavior: prefersReducedMotion ? "auto" : "smooth",
       block: "center",
     });
-  }, []);
+  }, [prefersReducedMotion]);
 
   /* Callback ref factory — stable across renders */
   const setRef = useCallback(
@@ -164,7 +193,7 @@ export function Services() {
         {/* ── Two-column scroll layout ── */}
         <div className="pt-12 sm:pt-16 lg:pt-24 lg:grid lg:grid-cols-2 lg:gap-10">
           {/* Left: sticky service nav (desktop only) */}
-          <div className="hidden lg:block pb-16 sm:pb-20 lg:pb-28" aria-hidden="true">
+          <div className="hidden lg:block pb-16 sm:pb-20 lg:pb-30" aria-hidden="true">
             <div className="sticky top-24">
               <nav>
                 <p className="font-heading font-bold uppercase tracking-[0.2em] text-eav-orange text-[14px] mb-6">
@@ -184,7 +213,7 @@ export function Services() {
                           ? NAV.activeColor
                           : NAV.inactiveColor,
                     }}
-                    transition={NAV.spring}
+                    transition={navTransition}
                     onClick={() => scrollTo(i)}
                     tabIndex={-1}
                   >
@@ -196,7 +225,7 @@ export function Services() {
                             ? NAV.accentColor
                             : NAV.inactiveColor,
                       }}
-                      transition={NAV.spring}
+                      transition={navTransition}
                     >
                       .
                     </motion.span>
@@ -224,16 +253,12 @@ export function Services() {
           </div>
 
           {/* Right: scrollable content panels */}
-          <div className="pb-16 sm:pb-20 lg:pb-36">
+          <div className="space-y-8 lg:pt-13 pb-16 sm:pb-16 lg:space-y-12 lg:pb-30">
             {SERVICES.map((s, i) => (
               <div
                 key={s.name}
                 ref={setRef(i)}
-                className={`flex items-start ${
-                  i === 0
-                    ? "pt-0 pb-8"
-                    : "pt-8 pb-8"
-                } lg:min-h-[70vh] lg:pt-12 lg:pb-12`}
+                className="flex items-start"
               >
                 <motion.div
                   animate={{
@@ -243,7 +268,7 @@ export function Services() {
                         : PANEL.inactiveOpacity
                       : 1,
                   }}
-                  transition={PANEL.spring}
+                  transition={panelTransition}
                 >
                   {/* Mobile: eyebrow on first panel + inline service name */}
                   {i === 0 && (
@@ -261,6 +286,7 @@ export function Services() {
 
                   {/* Description */}
                   <p className="font-body text-eav-black/80 text-base leading-relaxed">
+                    <strong className="font-semibold text-eav-black">{s.descriptionLead} </strong>
                     {s.description}
                   </p>
 
