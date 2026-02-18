@@ -304,6 +304,7 @@ export function Services() {
                           key={ba.label}
                           before={ba.before}
                           after={ba.after}
+                          service={ba.label}
                           alt={`${ba.label} before and after`}
                           className={s.beforeAfters.length > 1 ? "aspect-[4/3]" : ba.aspect}
                           showLabels={s.beforeAfters.length === 1}

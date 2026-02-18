@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 import { ArrowUp, Heart, Mail, MessageText, Phone } from "iconoir-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { trackContactClick } from "@/lib/analytics";
 
 const BADGES = [
   { icon: "✦", label: "Fully Insured" },
@@ -83,6 +84,17 @@ export function Footer() {
     [animateScrollTo, pathname],
   );
 
+  const handleEstimateCtaClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      trackContactClick({
+        channel: "estimate_form",
+        placement: "footer_cta",
+      });
+      handleBackToTopClick(e);
+    },
+    [handleBackToTopClick],
+  );
+
   return (
     <footer
       className="bg-eav-black"
@@ -106,7 +118,7 @@ export function Footer() {
         <div className="mt-7 sm:mt-8">
           <a
             href="/#top"
-            onClick={handleBackToTopClick}
+            onClick={handleEstimateCtaClick}
             className="inline-block bg-eav-white text-eav-black font-body font-semibold text-sm sm:text-base px-8 py-4 rounded-sm hover:bg-eav-white/90 active:scale-[0.98] transition-all"
           >
             Get an Estimate
@@ -125,6 +137,9 @@ export function Footer() {
           <li>
             <a
               href="mailto:hello@eavwash.co"
+              onClick={() =>
+                trackContactClick({ channel: "email", placement: "footer" })
+              }
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
               <Mail className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
@@ -134,6 +149,9 @@ export function Footer() {
           <li>
             <a
               href="tel:+14703009995"
+              onClick={() =>
+                trackContactClick({ channel: "phone", placement: "footer" })
+              }
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
               <Phone className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />
@@ -143,6 +161,9 @@ export function Footer() {
           <li>
             <a
               href="sms:+14703009995"
+              onClick={() =>
+                trackContactClick({ channel: "sms", placement: "footer" })
+              }
               className="flex items-center gap-2 text-eav-cream hover:text-eav-cream/70 transition-colors"
             >
               <MessageText className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />

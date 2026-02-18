@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Airplane, Check, MessageText, Phone } from "iconoir-react";
 import Image from "next/image";
 import { EstimateForm, type ReviewData } from "@/components/EstimateForm";
+import { trackContactClick } from "@/lib/analytics";
 import asphaltDarkJpg from "@/assets/background/asphalt-dark.jpg";
 
 
@@ -163,6 +164,9 @@ export function Hero() {
                 {/* Primary: text us */}
                 <a
                   href="sms:+14703009995"
+                  onClick={() =>
+                    trackContactClick({ channel: "sms", placement: "hero" })
+                  }
                   className="inline-flex items-center gap-2.5 bg-eav-orange text-eav-white font-body font-semibold text-sm sm:text-base px-7 py-3.5 rounded-sm hover:brightness-120 active:scale-[0.98] transition-all"
                 >
                   <MessageText className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
@@ -172,6 +176,9 @@ export function Hero() {
                 {/* Tertiary: phone */}
                 <a
                   href="tel:+14703009995"
+                  onClick={() =>
+                    trackContactClick({ channel: "phone", placement: "hero" })
+                  }
                   className="flex items-center gap-2 text-eav-cream font-body text-base font-semibold hover:text-eav-cream/80 transition-colors"
                 >
                   <Phone className="h-[18px] w-[18px] shrink-0 text-eav-orange" aria-hidden="true" />

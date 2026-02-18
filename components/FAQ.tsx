@@ -3,6 +3,7 @@
 import { useId, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence, useReducedMotion } from "framer-motion";
 import { BUSINESS, FAQS } from "@/app/seo";
+import { trackContactClick, trackEvent } from "@/lib/analytics";
 
 const COST_FAQ_QUESTION = "How much does pressure washing cost in the Atlanta area?";
 const FAQ_LINK_CLASS =
@@ -105,6 +106,12 @@ function FAQItem({
                     The easiest way to get started is by filling out{" "}
                     <a
                       href="#estimate-form"
+                      onClick={() =>
+                        trackContactClick({
+                          channel: "estimate_form",
+                          placement: "faq",
+                        })
+                      }
                       className={FAQ_LINK_CLASS}
                     >
                       our estimate form at the top of this page
@@ -112,6 +119,9 @@ function FAQItem({
                     or reaching out directly by{" "}
                     <a
                       href={BUSINESS.telephoneHref}
+                      onClick={() =>
+                        trackContactClick({ channel: "phone", placement: "faq" })
+                      }
                       className={FAQ_LINK_CLASS}
                     >
                       phone
@@ -119,6 +129,9 @@ function FAQItem({
                     or{" "}
                     <a
                       href={`mailto:${BUSINESS.email}`}
+                      onClick={() =>
+                        trackContactClick({ channel: "email", placement: "faq" })
+                      }
                       className={FAQ_LINK_CLASS}
                     >
                       email
@@ -145,6 +158,19 @@ export function FAQ() {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const handleToggle = (index: number, question: string) => {
+    const isOpening = openIndex !== index;
+    setOpenIndex(isOpening ? index : null);
+
+    if (isOpening) {
+      trackEvent("faq_open", {
+        faq_index: index,
+        faq_question: question,
+        placement: "faq",
+      });
+    }
+  };
 
   return (
     <section
@@ -179,7 +205,7 @@ export function FAQ() {
               faq={faq}
               index={i}
               isOpen={openIndex === i}
-              onToggle={() => setOpenIndex(openIndex === i ? null : i)}
+              onToggle={() => handleToggle(i, faq.question)}
               isInView={isInView}
               buttonId={`${faqId}-question-${i}`}
               panelId={`${faqId}-panel-${i}`}

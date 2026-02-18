@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Mail, Phone } from "iconoir-react";
 import Link from "next/link";
+import { trackContactClick } from "@/lib/analytics";
 
 function LogoSymbol({ className }: { className?: string }) {
   return (
@@ -138,6 +139,9 @@ export function Header() {
           <nav className="flex items-center justify-end gap-2 sm:gap-6" aria-label="Primary">
             <a
               href="tel:+14703009995"
+              onClick={() =>
+                trackContactClick({ channel: "phone", placement: "header" })
+              }
               className={`inline-flex h-8 items-center gap-1.5 rounded-sm bg-eav-orange px-3 font-body text-[11px] font-semibold uppercase tracking-[0.08em] text-eav-white transition-all duration-500 hover:brightness-110 active:scale-[0.98] sm:h-auto sm:rounded-none sm:bg-transparent sm:px-0 sm:text-[14px] sm:font-normal sm:normal-case sm:tracking-normal sm:hover:brightness-100 ${
                 isLightTheme
                   ? "sm:text-eav-black sm:hover:text-eav-black/70"
@@ -153,6 +157,9 @@ export function Header() {
             </a>
             <a
               href="mailto:hello@eavwash.co"
+              onClick={() =>
+                trackContactClick({ channel: "email", placement: "header" })
+              }
               className={`inline-flex h-8 items-center gap-1.5 rounded-sm bg-eav-orange px-3 font-body text-[11px] font-semibold uppercase tracking-[0.08em] text-eav-white transition-all duration-500 hover:brightness-110 active:scale-[0.98] sm:h-auto sm:rounded-none sm:bg-transparent sm:px-0 sm:text-[14px] sm:font-normal sm:normal-case sm:tracking-normal sm:hover:brightness-100 ${
                 isLightTheme
                   ? "sm:text-eav-black sm:hover:text-eav-black/70"

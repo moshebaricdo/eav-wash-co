@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "iconoir-react";
+import { trackContactClick, trackEvent } from "@/lib/analytics";
 
 /* ─────────────────────────────────────────────────────────
  * ESTIMATE FORM — MULTI-STEP FLOW
@@ -58,6 +59,13 @@ function formatPhoneInput(v: string) {
   if (digits.length <= 3) return digits;
   if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+function normalizeTimeline(value: string) {
+  if (value === "asap" || value === "1-2-weeks" || value === "flexible") {
+    return value;
+  }
+  return "unknown";
 }
 
 /* ─── Form state type ───────────────────────────────────── */
@@ -493,6 +501,10 @@ export function EstimateForm({
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    trackEvent("estimate_step_view", { step: currentStep + 1 });
+  }, [currentStep]);
+
   /* Padding helpers for inCard mode */
   const px = inCard ? "px-5 sm:px-5" : "";
   const pb = inCard ? "pb-5 sm:pb-5" : "";
@@ -527,6 +539,10 @@ export function EstimateForm({
 
   const goNext = () => {
     if (currentStep < TOTAL_STEPS - 1 && canProceed()) {
+      trackEvent("estimate_step_continue", {
+        step_from: currentStep + 1,
+        step_to: currentStep + 2,
+      });
       setDirection(1);
       setCurrentStep((s) => s + 1);
     }
@@ -547,12 +563,20 @@ export function EstimateForm({
     // Validate fields before submitting
     const errs = validateStep2();
     if (Object.keys(errs).length > 0) {
+      trackEvent("estimate_submit_error", {
+        error_type: "validation",
+        invalid_fields: Object.keys(errs).join(","),
+      });
       setFieldErrors(errs);
       return;
     }
     setFieldErrors({});
     setSubmitError("");
     setSubmitting(true);
+    trackContactClick({
+      channel: "estimate_form",
+      placement: "estimate_form",
+    });
 
     try {
       const res = await fetch("/api/estimate", {
@@ -562,14 +586,29 @@ export function EstimateForm({
       });
 
       if (res.ok) {
+        trackEvent("generate_lead", {
+          channel: "estimate_form",
+          placement: "estimate_form",
+          selected_services_count: form.surfaces.length,
+          timeline: normalizeTimeline(form.timeline),
+          has_address: Boolean(form.address.trim()),
+          has_notes: Boolean(form.notes.trim()),
+        });
         onSubmitted?.();
       } else {
         const data = await res.json().catch(() => null);
+        trackEvent("estimate_submit_error", {
+          error_type: "api_response",
+          status_code: res.status,
+        });
         setSubmitError(
           data?.error || "Something went wrong. Please try again.",
         );
       }
     } catch {
+      trackEvent("estimate_submit_error", {
+        error_type: "network",
+      });
       setSubmitError("Network error — please check your connection and try again.");
     } finally {
       setSubmitting(false);
@@ -577,6 +616,13 @@ export function EstimateForm({
   };
 
   const toggleSurface = (id: string) => {
+    const isSelectedNext = !form.surfaces.includes(id);
+    trackEvent("estimate_option_select", {
+      option_group: "surfaces",
+      option_value: id,
+      selected: isSelectedNext,
+    });
+
     setForm((f) => ({
       ...f,
       surfaces: f.surfaces.includes(id)
@@ -663,7 +709,13 @@ export function EstimateForm({
                     <TimelineSelect
                       options={TIMELINES}
                       selected={form.timeline}
-                      onSelect={(id) => setForm((f) => ({ ...f, timeline: id }))}
+                      onSelect={(id) => {
+                        trackEvent("estimate_option_select", {
+                          option_group: "timeline",
+                          option_value: id,
+                        });
+                        setForm((f) => ({ ...f, timeline: id }));
+                      }}
                       c={c}
                     />
                   </div>

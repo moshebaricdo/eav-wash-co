@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { AnalyticsClient } from "@/components/AnalyticsClient";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/app/seo";
 
 const GA_MEASUREMENT_ID = "G-77JLWT18K5";
@@ -134,6 +135,7 @@ export default function RootLayout({
             gtag('config', '${GA_MEASUREMENT_ID}');
           `}
         </Script>
+        <AnalyticsClient />
         <Header />
         <main id="main-content" className="scroll-mt-24" tabIndex={-1}>
           {children}

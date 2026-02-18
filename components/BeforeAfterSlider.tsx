@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { ArrowSeparate } from "iconoir-react";
 import Image, { type StaticImageData } from "next/image";
+import { trackEvent } from "@/lib/analytics";
 
 /* ─────────────────────────────────────────────────────────
  * BEFORE / AFTER SLIDER
@@ -18,6 +19,7 @@ import Image, { type StaticImageData } from "next/image";
 interface BeforeAfterSliderProps {
   before: StaticImageData;
   after: StaticImageData;
+  service?: string;
   alt?: string;
   className?: string;
   showLabels?: boolean;
@@ -26,6 +28,7 @@ interface BeforeAfterSliderProps {
 export function BeforeAfterSlider({
   before,
   after,
+  service = "unknown",
   alt = "Before and after comparison",
   className = "",
   showLabels = true,
@@ -33,7 +36,14 @@ export function BeforeAfterSlider({
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50); // percentage 0–100
   const isDragging = useRef(false);
+  const hasTrackedInteraction = useRef(false);
   const roundedPosition = Math.round(position);
+
+  const trackFirstInteraction = useCallback(() => {
+    if (hasTrackedInteraction.current) return;
+    hasTrackedInteraction.current = true;
+    trackEvent("before_after_interaction", { service });
+  }, [service]);
 
   const clampPosition = useCallback((value: number) => {
     return Math.min(100, Math.max(0, value));
@@ -52,10 +62,11 @@ export function BeforeAfterSlider({
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       isDragging.current = true;
+      trackFirstInteraction();
       e.currentTarget.setPointerCapture(e.pointerId);
       updatePosition(e.clientX);
     },
-    [updatePosition],
+    [trackFirstInteraction, updatePosition],
   );
 
   const onPointerMove = useCallback(
@@ -80,26 +91,32 @@ export function BeforeAfterSlider({
   const onHandleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+        trackFirstInteraction();
         e.preventDefault();
         nudgePosition(-2);
       } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+        trackFirstInteraction();
         e.preventDefault();
         nudgePosition(2);
       } else if (e.key === "PageDown") {
+        trackFirstInteraction();
         e.preventDefault();
         nudgePosition(-10);
       } else if (e.key === "PageUp") {
+        trackFirstInteraction();
         e.preventDefault();
         nudgePosition(10);
       } else if (e.key === "Home") {
+        trackFirstInteraction();
         e.preventDefault();
         setPosition(0);
       } else if (e.key === "End") {
+        trackFirstInteraction();
         e.preventDefault();
         setPosition(100);
       }
     },
-    [nudgePosition],
+    [nudgePosition, trackFirstInteraction],
   );
 
   /* Prevent image drag ghost */
