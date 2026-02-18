@@ -6,6 +6,7 @@ import { Airplane, Check, MessageText, Phone } from "iconoir-react";
 import Image from "next/image";
 import { EstimateForm, type ReviewData } from "@/components/EstimateForm";
 import { trackContactClick } from "@/lib/analytics";
+import { resolveTestModeState } from "@/lib/test-mode";
 import asphaltDarkJpg from "@/assets/background/asphalt-dark.jpg";
 
 
@@ -52,7 +53,10 @@ export function Hero() {
   const [showDesktopTexture, setShowDesktopTexture] = useState(false);
   const [estimateSuccess, setEstimateSuccess] = useState(false);
   const [estimateFormKey, setEstimateFormKey] = useState(0);
+  const [estimateFormPreviewEnabled, setEstimateFormPreviewEnabled] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const isEstimateFormUnavailable =
+    ESTIMATE_FORM_UNAVAILABLE && !estimateFormPreviewEnabled;
 
   const getEntranceOpacity = (minStage: number) => {
     return prefersReducedMotion ? 1 : stage >= minStage ? 1 : 0;
@@ -88,6 +92,11 @@ export function Hero() {
     media.addEventListener("change", updateTextureVisibility);
 
     return () => media.removeEventListener("change", updateTextureVisibility);
+  }, []);
+
+  useEffect(() => {
+    const { estimateFormPreviewEnabled: isEnabled } = resolveTestModeState();
+    setEstimateFormPreviewEnabled(isEnabled);
   }, []);
 
   return (
@@ -228,7 +237,7 @@ export function Hero() {
               </div>
 
               {/* Embedded form — manages its own px so progress bar bleeds */}
-              <div className={ESTIMATE_FORM_UNAVAILABLE ? "pointer-events-none select-none" : ""}>
+              <div className={isEstimateFormUnavailable ? "pointer-events-none select-none" : ""}>
                 <EstimateForm
                   key={estimateFormKey}
                   variant="light"
@@ -238,7 +247,7 @@ export function Hero() {
               </div>
 
               <AnimatePresence>
-                {estimateSuccess && !ESTIMATE_FORM_UNAVAILABLE && (
+                {estimateSuccess && !isEstimateFormUnavailable && (
                   <motion.div
                     className="absolute inset-0 z-20 origin-bottom bg-eav-orange"
                     initial={{ scaleY: 0 }}
@@ -277,7 +286,7 @@ export function Hero() {
               </AnimatePresence>
 
               <AnimatePresence>
-                {ESTIMATE_FORM_UNAVAILABLE && (
+                {isEstimateFormUnavailable && (
                   <motion.div
                     className="absolute inset-0 z-30 bg-eav-cream/90"
                     initial={{ opacity: 0 }}

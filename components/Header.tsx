@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mail, Phone } from "iconoir-react";
 import Link from "next/link";
 import { trackContactClick } from "@/lib/analytics";
+import { resolveTestModeState } from "@/lib/test-mode";
 
 function LogoSymbol({ className }: { className?: string }) {
   return (
@@ -51,6 +52,7 @@ export function Header() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [isHiddenForCta, setIsHiddenForCta] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [isTestModeEnabled, setIsTestModeEnabled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -82,6 +84,11 @@ export function Header() {
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
     };
+  }, []);
+
+  useEffect(() => {
+    const { testModeEnabled } = resolveTestModeState();
+    setIsTestModeEnabled(testModeEnabled);
   }, []);
 
   useEffect(() => {
@@ -122,19 +129,32 @@ export function Header() {
     >
       <div className="mx-auto max-w-[1400px] px-5 py-3 sm:px-8 sm:py-4">
         <div className="flex items-center justify-between gap-3">
-          <Link
-            href="/"
-            className="inline-flex w-fit items-center gap-2.5 transition-opacity hover:opacity-80"
-            aria-label="EAV Wash Co. home"
-          >
-            <span
-              className={`block h-auto w-[140px] transition-colors duration-500 sm:w-[140px] ${
-                isLightTheme ? "text-eav-black" : "text-eav-cream"
-              }`}
+          <div className="inline-flex items-center gap-2.5">
+            <Link
+              href="/"
+              className="inline-flex w-fit items-center gap-2.5 transition-opacity hover:opacity-80"
+              aria-label="EAV Wash Co. home"
             >
-              <Wordmark className="h-auto w-full" />
-            </span>
-          </Link>
+              <span
+                className={`block h-auto w-[140px] transition-colors duration-500 sm:w-[140px] ${
+                  isLightTheme ? "text-eav-black" : "text-eav-cream"
+                }`}
+              >
+                <Wordmark className="h-auto w-full" />
+              </span>
+            </Link>
+            {isTestModeEnabled && (
+              <span
+                className={`inline-flex h-5 items-center rounded-full border px-2 font-body text-[10px] font-semibold uppercase tracking-[0.08em] ${
+                  isLightTheme
+                    ? "border-eav-black/20 bg-eav-black/5 text-eav-black"
+                    : "border-eav-cream/25 bg-eav-cream/10 text-eav-cream"
+                }`}
+              >
+                Test Mode
+              </span>
+            )}
+          </div>
 
           <nav className="flex items-center justify-end gap-2 sm:gap-6" aria-label="Primary">
             <a
