@@ -27,6 +27,10 @@ Create these in GA4 Admin -> Custom definitions:
   - Fired for SMS/phone/email and estimate-form CTAs.
   - Params: `channel`, `placement`, `page`, plus stored attribution on this event.
 
+- `estimate_form_start`
+  - Fired once on first meaningful estimate form interaction (surface or timeline selection).
+  - Params: `page`.
+
 - `estimate_step_view`
   - Fired when estimate form step is viewed.
   - Params: `step`, `page`.
@@ -81,6 +85,7 @@ Use GA4 DebugView and verify all paths below:
   - Click FAQ inline estimate/phone/email links -> `contact_click` with `placement=faq`.
 
 - Form funnel
+  - First interaction with form -> `estimate_form_start`.
   - Open form and observe `estimate_step_view` for step 1.
   - Complete step 1 and continue -> `estimate_step_continue` and `estimate_step_view` step 2.
   - Toggle services and timeline -> `estimate_option_select`.

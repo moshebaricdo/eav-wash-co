@@ -500,6 +500,13 @@ export function EstimateForm({
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const hasTrackedFormStart = useRef(false);
+
+  const trackEstimateFormStart = useCallback(() => {
+    if (hasTrackedFormStart.current) return;
+    hasTrackedFormStart.current = true;
+    trackEvent("estimate_form_start");
+  }, []);
 
   useEffect(() => {
     trackEvent("estimate_step_view", { step: currentStep + 1 });
@@ -616,6 +623,7 @@ export function EstimateForm({
   };
 
   const toggleSurface = (id: string) => {
+    trackEstimateFormStart();
     const isSelectedNext = !form.surfaces.includes(id);
     trackEvent("estimate_option_select", {
       option_group: "surfaces",
@@ -710,6 +718,7 @@ export function EstimateForm({
                       options={TIMELINES}
                       selected={form.timeline}
                       onSelect={(id) => {
+                        trackEstimateFormStart();
                         trackEvent("estimate_option_select", {
                           option_group: "timeline",
                           option_value: id,

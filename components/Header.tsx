@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Mail, Phone } from "iconoir-react";
+import { Airplane, Mail, Phone } from "iconoir-react";
 import Link from "next/link";
 import { trackContactClick } from "@/lib/analytics";
 import { resolveTestModeState } from "@/lib/test-mode";
@@ -127,6 +127,12 @@ export function Header() {
           : "bg-transparent backdrop-blur-0"
       }`}
     >
+      <div className="flex h-12 items-center justify-center bg-eav-orange px-5 text-eav-white sm:px-8">
+        <p className="inline-flex items-center justify-center gap-3 text-center font-body text-sm font-semibold sm:text-base">
+          <Airplane className="h-5 w-5 shrink-0" aria-hidden="true" />
+          <span>Temporarily closed while we travel! We'll be back March 9th.</span>
+        </p>
+      </div>
       <div className="mx-auto max-w-[1400px] px-5 py-3 sm:px-8 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="inline-flex items-center gap-2.5">
