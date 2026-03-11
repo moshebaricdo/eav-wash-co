@@ -133,7 +133,7 @@ export function About() {
               transition={{ ...ANIM.spring, delay: 0.6 }}
             >
               <p className="font-body text-eav-cream/80 text-base sm:text-base leading-relaxed">
-              EAV Wash Co. was a venture started by EAV-residents Trev and Moshe, combining hands-on trade 
+              EAV Wash Co. was started by EAV-residents Trev and Moshe, combining hands-on trade 
               experience with a modern, no-BS approach to service. With backgrounds in property inspection, 
               contracting work, design, and marketing, we saw an opportunity 
               to build something focused and well-run. Pressure washing became our starting point because it's 
