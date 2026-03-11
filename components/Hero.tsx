@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Airplane, Check, MessageText, Phone } from "iconoir-react";
+import { Check, MessageText, Phone } from "iconoir-react";
 import Image from "next/image";
 import { EstimateForm, type ReviewData } from "@/components/EstimateForm";
 import { trackContactClick } from "@/lib/analytics";
-import { resolveTestModeState } from "@/lib/test-mode";
 import asphaltDarkJpg from "@/assets/background/asphalt-dark.jpg";
 
 
@@ -44,8 +43,6 @@ const REVIEW: ReviewData = {
   location: "Grant Park",
 };
 
-const ESTIMATE_FORM_UNAVAILABLE = true;
-
 /* ─── Component ────────────────────────────────────────── */
 
 export function Hero() {
@@ -53,10 +50,7 @@ export function Hero() {
   const [showDesktopTexture, setShowDesktopTexture] = useState(false);
   const [estimateSuccess, setEstimateSuccess] = useState(false);
   const [estimateFormKey, setEstimateFormKey] = useState(0);
-  const [estimateFormPreviewEnabled, setEstimateFormPreviewEnabled] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-  const isEstimateFormUnavailable =
-    ESTIMATE_FORM_UNAVAILABLE && !estimateFormPreviewEnabled;
 
   const getEntranceOpacity = (minStage: number) => {
     return prefersReducedMotion ? 1 : stage >= minStage ? 1 : 0;
@@ -92,11 +86,6 @@ export function Hero() {
     media.addEventListener("change", updateTextureVisibility);
 
     return () => media.removeEventListener("change", updateTextureVisibility);
-  }, []);
-
-  useEffect(() => {
-    const { estimateFormPreviewEnabled: isEnabled } = resolveTestModeState();
-    setEstimateFormPreviewEnabled(isEnabled);
   }, []);
 
   return (
@@ -237,7 +226,7 @@ export function Hero() {
               </div>
 
               {/* Embedded form — manages its own px so progress bar bleeds */}
-              <div className={isEstimateFormUnavailable ? "pointer-events-none select-none" : ""}>
+              <div>
                 <EstimateForm
                   key={estimateFormKey}
                   variant="light"
@@ -247,7 +236,7 @@ export function Hero() {
               </div>
 
               <AnimatePresence>
-                {estimateSuccess && !isEstimateFormUnavailable && (
+                {estimateSuccess && (
                   <motion.div
                     className="absolute inset-0 z-20 origin-bottom bg-eav-orange"
                     initial={{ scaleY: 0 }}
@@ -280,35 +269,6 @@ export function Hero() {
                       >
                         Submit Another Request
                       </button>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
-                {isEstimateFormUnavailable && (
-                  <motion.div
-                    className="absolute inset-0 z-30 bg-eav-cream/90"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <motion.div
-                      className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-eav-black"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ type: "spring", stiffness: 280, damping: 26, delay: 0.12 }}
-                    >
-                      <span className="inline-flex h-14 w-14 items-center justify-center rounded-full border-2 border-eav-black/80">
-                        <Airplane className="h-7 w-7" aria-hidden="true" />
-                      </span>
-                      <p className="mt-5 font-heading font-bold uppercase tracking-[0.08em] text-[24px]">
-                        We&apos;ll Be Back Soon
-                      </p>
-                      <p className="mt-2 max-w-[40ch] font-body text-sm text-eav-black/70">
-                        We&apos;re temporarily pausing new estimate requests while we travel. We&apos;ll be back March 9th!
-                      </p>
                     </motion.div>
                   </motion.div>
                 )}
