@@ -4,6 +4,8 @@ import { Sidebar } from "./sidebar";
 import { logout } from "./actions";
 import { HeaderStats, HeaderStatsSkeleton } from "./header-stats";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardLayout({
   children,
 }: {
