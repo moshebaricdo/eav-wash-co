@@ -1,51 +1,58 @@
 import { NextResponse } from "next/server";
+import { createEstimateLead } from "@/lib/db";
 
-/**
- * API route stub for estimate form submissions.
- *
- * Currently just validates and returns a success response.
- * Wire this up to email (Resend, Formspree), Google Sheets,
- * or any backend when ready.
- */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Basic validation
-    const { surfaces, otherDetails, timeline, name, phone, email, address, notes } = body;
+    const { surfaces, otherDetails, timeline, name, phone, email, address, notes, attribution } =
+      body;
 
     if (!surfaces?.length || !timeline || !name || !phone || !email) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Basic email format check
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
         { error: "Invalid email address" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // TODO: Send to email service, Google Sheets, etc.
-    console.log("Estimate request received:", {
+    const result = await createEstimateLead({
       surfaces,
+      otherDetails: otherDetails || "",
       timeline,
       name,
       phone,
       email,
-      otherDetails: otherDetails || "",
       address: address || "",
       notes: notes || "",
+      attribution: attribution || undefined,
     });
 
-    return NextResponse.json({ success: true });
-  } catch {
+    if (!result) {
+      console.log("Estimate request received (no DB):", {
+        surfaces,
+        timeline,
+        name,
+        phone,
+        email,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      leadId: result?.leadId ?? null,
+    });
+  } catch (err) {
+    console.error("Estimate submission error:", err);
     return NextResponse.json(
       { error: "Invalid request" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

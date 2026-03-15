@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/crm/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -13,6 +14,7 @@
 
 # next.js
 /.next/
+/crm/.next/
 /out/
 
 # production
@@ -31,6 +33,8 @@ yarn-error.log*
 
 # env files
 .env*.local
+/crm/.env
+/crm/.env*.local
 
 # vercel
 .vercel

@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────
+ * EAV WASH CO. CRM — DESIGN TOKENS
+ *
+ * Same brand palette as the marketing site, adapted for
+ * a dashboard context with lighter backgrounds.
+ * ───────────────────────────────────────────────────────── */
+
+@theme {
+  --color-eav-black: #1A1A1A;
+  --color-eav-orange: #FB532C;
+  --color-eav-orange-bright: #FF6F4D;
+  --color-eav-cream: #F0E8D8;
+  --color-eav-white: #FFFFFF;
+  --color-eav-gray: #2A2A2A;
+  --color-eav-muted: #8A8A8A;
+  --color-eav-surface: #F7F4EE;
+  --color-eav-border: #E5E0D6;
+
+  --font-heading: var(--font-interstate), "Arial Narrow", sans-serif;
+  --font-body: var(--font-uncut-sans), system-ui, sans-serif;
+}
+
+/* ─── Base ──────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-eav-surface);
+  color: var(--color-eav-black);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-eav-orange);
+  color: var(--color-eav-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-eav-orange);
+  outline-offset: 2px;
+}

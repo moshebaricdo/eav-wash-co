@@ -1,30 +1,37 @@
 {
-  "name": "eav-wash-co",
+  "name": "eav-wash-co-crm",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx lib/db/migrate.ts",
+    "db:seed": "tsx lib/db/seed.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1",
-    "framer-motion": "^12.34.0",
-    "iconoir-react": "^7.11.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.44.2",
+    "jose": "^6.0.11",
     "lucide-react": "^0.563.0",
     "next": "^15.5.12",
-    "postgres": "^3.4.8",
+    "postgres": "^3.4.7",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.13",
     "@types/react-dom": "^19.2.3",
+    "drizzle-kit": "^0.31.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
+    "tsx": "^4.19.4",
     "typescript": "^5.9.3"
   }
 }

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "iconoir-react";
 import { trackContactClick, trackEvent } from "@/lib/analytics";
+import { getStoredAttribution } from "@/lib/attribution";
 
 /* ─────────────────────────────────────────────────────────
  * ESTIMATE FORM — MULTI-STEP FLOW
@@ -589,7 +590,7 @@ export function EstimateForm({
       const res = await fetch("/api/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, attribution: getStoredAttribution() }),
       });
 
       if (res.ok) {
