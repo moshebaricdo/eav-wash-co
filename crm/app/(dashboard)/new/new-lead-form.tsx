@@ -37,7 +37,7 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
     error: "",
   });
   const [showOther, setShowOther] = useState(false);
-  const [mode, setMode] = useState<"new" | "existing">("new");
+  const [mode, setMode] = useState<"new" | "existing">(contacts.length > 0 ? "existing" : "new");
   const [selectedContact, setSelectedContact] = useState<ContactOption | null>(null);
   const [search, setSearch] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);

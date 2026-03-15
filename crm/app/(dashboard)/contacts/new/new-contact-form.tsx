@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useActionState } from "react";
 import { createContact } from "./actions";
 
@@ -9,10 +10,25 @@ const SOURCES = [
   { id: "referral", label: "Referral" },
 ];
 
+const SURFACES = [
+  { id: "driveway", label: "Driveway" },
+  { id: "patio-deck", label: "Patio / Deck" },
+  { id: "walkways", label: "Walkways" },
+  { id: "other", label: "Other" },
+];
+
+const TIMELINES = [
+  { id: "asap", label: "ASAP" },
+  { id: "1-2-weeks", label: "1–2 Weeks" },
+  { id: "flexible", label: "Flexible" },
+];
+
 export function NewContactForm() {
   const [state, formAction, pending] = useActionState(createContact, {
     error: "",
   });
+  const [addLead, setAddLead] = useState(false);
+  const [showOther, setShowOther] = useState(false);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -102,12 +118,146 @@ export function NewContactForm() {
         </div>
       </div>
 
+      {/* Optional lead toggle */}
+      <div className="rounded-lg border border-eav-border bg-eav-white p-5">
+        <label className="flex cursor-pointer items-center gap-3">
+          <input
+            type="checkbox"
+            name="addLead"
+            checked={addLead}
+            onChange={(e) => setAddLead(e.target.checked)}
+            className="h-4 w-4 rounded border-eav-border text-eav-orange accent-eav-orange"
+          />
+          <span className="font-body text-sm font-medium text-eav-black">
+            Also create a lead for this contact
+          </span>
+        </label>
+      </div>
+
+      {addLead && (
+        <div className="rounded-lg border border-eav-border bg-eav-white p-5">
+          <h2 className="mb-4 font-heading text-sm font-bold uppercase tracking-wide text-eav-black">
+            Lead Details
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block font-body text-xs font-medium text-eav-muted">
+                Services Requested
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {SURFACES.map((s) => (
+                  <label
+                    key={s.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-md border-2 border-eav-border px-3 py-2 transition-colors has-[:checked]:border-eav-orange has-[:checked]:bg-eav-orange/5"
+                  >
+                    <input
+                      type="checkbox"
+                      name="surfaces"
+                      value={s.id}
+                      onChange={(e) => {
+                        if (s.id === "other") setShowOther(e.target.checked);
+                      }}
+                      className="h-3.5 w-3.5 accent-eav-orange"
+                    />
+                    <span className="font-body text-sm text-eav-black">
+                      {s.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {showOther && (
+              <div className="flex flex-col gap-1.5">
+                <label className="font-body text-xs font-medium text-eav-muted">
+                  Other Details
+                </label>
+                <input
+                  name="otherDetails"
+                  type="text"
+                  placeholder="What else needs cleaning?"
+                  className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
+                />
+              </div>
+            )}
+
+            <div>
+              <label className="mb-2 block font-body text-xs font-medium text-eav-muted">
+                Timeline
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {TIMELINES.map((t) => (
+                  <label
+                    key={t.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-md border-2 border-eav-border px-3 py-2 transition-colors has-[:checked]:border-eav-orange has-[:checked]:bg-eav-orange/5"
+                  >
+                    <input
+                      type="radio"
+                      name="timeline"
+                      value={t.id}
+                      className="h-3.5 w-3.5 accent-eav-orange"
+                    />
+                    <span className="font-body text-sm text-eav-black">
+                      {t.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <label className="font-body text-xs font-medium text-eav-muted">
+                  Estimated Value ($)
+                </label>
+                <input
+                  name="estimatedValue"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-body text-xs font-medium text-eav-muted">
+                  Job Site Address
+                </label>
+                <input
+                  name="jobAddress"
+                  type="text"
+                  placeholder="Same as contact or different"
+                  className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="font-body text-xs font-medium text-eav-muted">
+                Lead Notes
+              </label>
+              <textarea
+                name="leadNotes"
+                rows={2}
+                placeholder="Notes specific to this lead..."
+                className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange resize-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={pending}
         className="h-11 w-full rounded-md bg-eav-orange font-body text-sm font-semibold text-eav-white transition-all hover:brightness-95 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
       >
-        {pending ? "Creating..." : "Create Contact"}
+        {pending
+          ? "Creating..."
+          : addLead
+            ? "Create Contact & Lead"
+            : "Create Contact"}
       </button>
     </form>
   );

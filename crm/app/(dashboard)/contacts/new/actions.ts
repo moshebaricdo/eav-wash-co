@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { eq, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { contacts } from "@/lib/db/schema";
+import { contacts, leads, activities } from "@/lib/db/schema";
 
 export async function createContact(
   _prev: { error: string },
@@ -16,6 +16,14 @@ export async function createContact(
   const address = (formData.get("address") as string)?.trim();
   const notes = (formData.get("notes") as string)?.trim();
   const source = (formData.get("source") as string) || "manual";
+  const addLead = formData.get("addLead") === "on";
+
+  const surfacesRaw = formData.getAll("surfaces") as string[];
+  const otherDetails = (formData.get("otherDetails") as string)?.trim();
+  const timeline = (formData.get("timeline") as string)?.trim();
+  const leadNotes = (formData.get("leadNotes") as string)?.trim();
+  const estimatedValue = (formData.get("estimatedValue") as string)?.trim();
+  const jobAddress = (formData.get("jobAddress") as string)?.trim();
 
   if (!name) {
     return { error: "Name is required" };
@@ -57,7 +65,7 @@ export async function createContact(
           email: normalizedEmail,
           phone: normalizedPhone,
           address: address || null,
-          type: "lead",
+          type: addLead ? "lead" : "client",
           source: source as "estimate_form" | "manual" | "phone" | "referral",
           notes: notes || null,
         })
@@ -72,12 +80,41 @@ export async function createContact(
         email: normalizedEmail,
         phone: normalizedPhone,
         address: address || null,
-        type: "lead",
+        type: addLead ? "lead" : "client",
         source: source as "estimate_form" | "manual" | "phone" | "referral",
         notes: notes || null,
       })
       .returning({ id: contacts.id });
     contactId = newContact.id;
+  }
+
+  if (addLead) {
+    const [lead] = await db
+      .insert(leads)
+      .values({
+        contactId,
+        status: "new",
+        surfaces: surfacesRaw.length > 0 ? surfacesRaw : null,
+        otherDetails: otherDetails || null,
+        timeline: timeline || null,
+        address: jobAddress || address || null,
+        notes: leadNotes || null,
+        estimatedValue: estimatedValue || null,
+        source: source as "estimate_form" | "manual" | "phone" | "referral",
+      })
+      .returning({ id: leads.id });
+
+    await db.insert(activities).values({
+      leadId: lead.id,
+      contactId,
+      type: "note",
+      content: `Lead created manually${surfacesRaw.length > 0 ? `: ${surfacesRaw.join(", ")}` : ""}`,
+    });
+
+    revalidatePath("/leads");
+    revalidatePath("/contacts");
+    revalidatePath("/");
+    redirect(`/leads/${lead.id}`);
   }
 
   revalidatePath("/contacts");
