@@ -202,7 +202,7 @@ export function Footer() {
         </span>
         <div className="flex items-center gap-3">
           <a
-            href="https://crm.eavwash.co/login"
+            href="https://www.crm.eavwash.co/login"
             className="flex items-center gap-1.5 hover:text-eav-cream/50 transition-colors"
           >
             <Lock className="h-3 w-3" aria-hidden="true" />
