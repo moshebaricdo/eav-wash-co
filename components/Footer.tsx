@@ -2,6 +2,7 @@
 
 import { useCallback, useRef } from "react";
 import { ArrowUp, Heart, Mail, MessageText, Phone } from "iconoir-react";
+import { Lock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { trackContactClick } from "@/lib/analytics";
@@ -199,9 +200,18 @@ export function Footer() {
             from Atlanta
           </span>
         </span>
-        <Link href="/privacy" className="hover:text-eav-cream/50 transition-colors">
-          Privacy
-        </Link>
+        <div className="flex items-center gap-3">
+          <a
+            href="https://crm.eavwash.co/login"
+            className="flex items-center gap-1.5 hover:text-eav-cream/50 transition-colors"
+          >
+            <Lock className="h-3 w-3" aria-hidden="true" />
+            Login
+          </a>
+          <Link href="/privacy" className="hover:text-eav-cream/50 transition-colors">
+            Privacy
+          </Link>
+        </div>
       </div>
     </footer>
   );
