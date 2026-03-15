@@ -4,6 +4,7 @@ import { contacts } from "@/lib/db/schema";
 import { SOURCE_LABELS } from "@/lib/db/schema";
 import { desc, eq, ilike, and, SQL } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Contacts" };
 
 type Props = {

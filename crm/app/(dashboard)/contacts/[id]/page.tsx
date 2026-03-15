@@ -15,6 +15,8 @@ import { ContactEditForm } from "./contact-edit-form";
 import { PromoteButton } from "./promote-button";
 import { ContactNoteForm } from "./contact-note-form";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {

@@ -8,6 +8,7 @@ import { eq, and, gte, lte } from "drizzle-orm";
 import { CalendarGrid } from "./calendar-grid";
 import { MonthNav } from "./month-nav";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Calendar" };
 
 type Props = {

@@ -7,6 +7,7 @@ import { eq, desc, sql, gte, and, or } from "drizzle-orm";
 import { LEAD_STATUS_LABELS, SOURCE_LABELS } from "@/lib/db/schema";
 import type { LeadStatus } from "@/lib/db/schema";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Dashboard" };
 
 const STATUS_COLORS: Record<string, string> = {

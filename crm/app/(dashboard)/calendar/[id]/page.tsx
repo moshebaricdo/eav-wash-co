@@ -17,6 +17,8 @@ import { JobStatusActions } from "./job-status-actions";
 import { JobEditForm } from "./job-edit-form";
 import { DeleteJobButton } from "./delete-job-button";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props) {

@@ -8,6 +8,8 @@ import { LEAD_STATUS_LABELS, SOURCE_LABELS, JOB_STATUS_LABELS } from "@/lib/db/s
 import type { JobStatus } from "@/lib/db/schema";
 import type { LeadStatus } from "@/lib/db/schema";
 import { InlineStatusSelect } from "../inline-status-select";
+
+export const dynamic = "force-dynamic";
 import { LeadDetailsForm } from "./lead-details-form";
 import { AddNoteForm } from "./add-note-form";
 import { DeleteLeadButton } from "./delete-lead-button";

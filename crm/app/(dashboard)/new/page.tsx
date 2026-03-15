@@ -3,6 +3,7 @@ import { contacts } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { NewLeadForm } from "./new-lead-form";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "New Lead" };
 
 export default async function NewLeadPage() {

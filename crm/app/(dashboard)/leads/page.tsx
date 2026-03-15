@@ -8,6 +8,8 @@ import {
 } from "@/lib/db/schema";
 import type { LeadStatus } from "@/lib/db/schema";
 import { eq, desc, and, ilike, SQL } from "drizzle-orm";
+
+export const dynamic = "force-dynamic";
 import { StatusFilter } from "./status-filter";
 import { InlineStatusSelect } from "./inline-status-select";
 

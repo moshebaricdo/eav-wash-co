@@ -5,6 +5,7 @@ import { contacts, leads } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { ScheduleJobForm } from "./schedule-job-form";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Schedule Job" };
 
 type Props = {
