@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { leads, jobs } from "@/lib/db/schema";
+import Link from "next/link";
 import { sql, eq, and, or } from "drizzle-orm";
 import {
   Sun,
@@ -83,43 +84,51 @@ export async function HeaderStats() {
   const [weather, stats] = await Promise.all([getWeather(), getTodayStats()]);
 
   const WeatherIcon = weather ? weatherIcon(weather.code) : null;
+  const localTime = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date());
 
   return (
-    <div className="flex items-center gap-4 font-body text-xs">
-      {weather && WeatherIcon && (
-        <>
+    <div className="ml-auto flex items-center gap-4 font-body text-xs md:ml-0">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 text-eav-muted">
+          <Clock className="h-3.5 w-3.5" />
+          <span className="font-medium text-eav-black">{localTime}</span>
+        </div>
+        {weather && WeatherIcon && (
           <div className="flex items-center gap-1.5 text-eav-muted">
             <WeatherIcon className="h-4 w-4" />
             <span className="font-medium text-eav-black">
               {weather.temp}°F
             </span>
           </div>
-          <div className="h-3.5 w-px bg-eav-border" />
-        </>
-      )}
-
-      <div className="flex items-center gap-1.5 text-eav-muted">
-        <Target className="h-3.5 w-3.5" />
-        <span className="font-medium text-eav-black">{stats.leadsToday}</span>
-        <span>leads today</span>
-      </div>
-
-      <div className="h-3.5 w-px bg-eav-border" />
-
-      <div className="flex items-center gap-1.5 text-eav-muted">
-        <CalendarDays className="h-3.5 w-3.5" />
-        <span className="font-medium text-eav-black">{stats.jobsToday}</span>
-        <span>jobs today</span>
-        {stats.soonestTime && (
-          <>
-            <span className="text-eav-border">·</span>
-            <Clock className="h-3 w-3" />
-            <span className="font-medium text-eav-black">
-              {stats.soonestTime}
-            </span>
-          </>
         )}
       </div>
+
+      <div className="hidden h-3.5 w-px bg-eav-border md:block" />
+
+      <Link
+        href="/leads"
+        className="hidden items-center gap-1.5 text-eav-muted opacity-100 transition-opacity hover:opacity-80 md:flex"
+      >
+        <Target className="h-3.5 w-3.5" />
+        <span className="flex items-center gap-1">
+          <span className="font-medium text-eav-black">{stats.leadsToday}</span>
+          <span>leads today</span>
+        </span>
+      </Link>
+
+      <Link
+        href="/calendar"
+        className="hidden items-center gap-1.5 text-eav-muted opacity-100 transition-opacity hover:opacity-80 md:flex"
+      >
+        <CalendarDays className="h-3.5 w-3.5" />
+        <span className="flex items-center gap-1">
+          <span className="font-medium text-eav-black">{stats.jobsToday}</span>
+          <span>jobs today</span>
+        </span>
+      </Link>
     </div>
   );
 }
@@ -128,10 +137,10 @@ export function HeaderStatsSkeleton() {
   return (
     <div className="flex items-center gap-4">
       <div className="h-4 w-16 animate-pulse rounded bg-eav-surface" />
-      <div className="h-3.5 w-px bg-eav-border" />
-      <div className="h-4 w-24 animate-pulse rounded bg-eav-surface" />
-      <div className="h-3.5 w-px bg-eav-border" />
-      <div className="h-4 w-32 animate-pulse rounded bg-eav-surface" />
+      <div className="hidden h-3.5 w-px bg-eav-border md:block" />
+      <div className="hidden h-4 w-24 animate-pulse rounded bg-eav-surface md:block" />
+      <div className="hidden h-3.5 w-px bg-eav-border md:block" />
+      <div className="hidden h-4 w-32 animate-pulse rounded bg-eav-surface md:block" />
     </div>
   );
 }

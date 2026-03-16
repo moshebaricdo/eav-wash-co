@@ -1,8 +1,20 @@
+import { db } from "@/lib/db";
+import { properties } from "@/lib/db/schema";
+import { desc } from "drizzle-orm";
 import { NewContactForm } from "./new-contact-form";
 
 export const metadata = { title: "New Contact" };
 
-export default function NewContactPage() {
+export default async function NewContactPage() {
+  const allProperties = await db
+    .select({
+      id: properties.id,
+      name: properties.name,
+      address: properties.address,
+    })
+    .from(properties)
+    .orderBy(desc(properties.updatedAt));
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
@@ -13,7 +25,7 @@ export default function NewContactPage() {
           Add a new contact to the CRM.
         </p>
       </div>
-      <NewContactForm />
+      <NewContactForm properties={allProperties} />
     </div>
   );
 }

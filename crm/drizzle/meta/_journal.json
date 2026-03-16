@@ -15,6 +15,20 @@
       "when": 1773539586182,
       "tag": "0001_whole_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773630131300,
+      "tag": "0002_property_model",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773632400000,
+      "tag": "0003_property_backfill_required",
+      "breakpoints": true
     }
   ]
 }

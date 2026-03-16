@@ -20,6 +20,13 @@ export const sourceEnum = pgEnum("source", [
   "phone",
   "referral",
 ]);
+export const propertyContactRoleEnum = pgEnum("property_contact_role", [
+  "owner",
+  "tenant",
+  "manager",
+  "onsite_contact",
+  "other",
+]);
 export const leadStatusEnum = pgEnum("lead_status", [
   "new",
   "contacted",
@@ -66,6 +73,53 @@ export const contactsRelations = relations(contacts, ({ many }) => ({
   leads: many(leads),
   activities: many(activities),
   jobs: many(jobs),
+  propertyLinks: many(propertyContacts),
+}));
+
+/* ─── Properties ────────────────────────────────────────── */
+
+export const properties = pgTable("properties", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name"),
+  address: text("address").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const propertyContacts = pgTable("property_contacts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  propertyId: uuid("property_id")
+    .references(() => properties.id)
+    .notNull(),
+  contactId: uuid("contact_id")
+    .references(() => contacts.id)
+    .notNull(),
+  role: propertyContactRoleEnum("role").default("other").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const propertiesRelations = relations(properties, ({ many }) => ({
+  contacts: many(propertyContacts),
+  leads: many(leads),
+  jobs: many(jobs),
+}));
+
+export const propertyContactsRelations = relations(propertyContacts, ({ one }) => ({
+  property: one(properties, {
+    fields: [propertyContacts.propertyId],
+    references: [properties.id],
+  }),
+  contact: one(contacts, {
+    fields: [propertyContacts.contactId],
+    references: [contacts.id],
+  }),
 }));
 
 /* ─── Leads ─────────────────────────────────────────────── */
@@ -74,6 +128,9 @@ export const leads = pgTable("leads", {
   id: uuid("id").primaryKey().defaultRandom(),
   contactId: uuid("contact_id")
     .references(() => contacts.id)
+    .notNull(),
+  propertyId: uuid("property_id")
+    .references(() => properties.id)
     .notNull(),
   status: leadStatusEnum("status").default("new").notNull(),
   surfaces: jsonb("surfaces").$type<string[]>(),
@@ -96,6 +153,10 @@ export const leadsRelations = relations(leads, ({ one, many }) => ({
   contact: one(contacts, {
     fields: [leads.contactId],
     references: [contacts.id],
+  }),
+  property: one(properties, {
+    fields: [leads.propertyId],
+    references: [properties.id],
   }),
   activities: many(activities),
   jobs: many(jobs),
@@ -135,6 +196,9 @@ export const jobs = pgTable("jobs", {
   contactId: uuid("contact_id")
     .references(() => contacts.id)
     .notNull(),
+  propertyId: uuid("property_id")
+    .references(() => properties.id)
+    .notNull(),
   leadId: uuid("lead_id").references(() => leads.id),
   title: text("title").notNull(),
   status: jobStatusEnum("status").default("scheduled").notNull(),
@@ -155,6 +219,10 @@ export const jobsRelations = relations(jobs, ({ one }) => ({
   contact: one(contacts, {
     fields: [jobs.contactId],
     references: [contacts.id],
+  }),
+  property: one(properties, {
+    fields: [jobs.propertyId],
+    references: [properties.id],
   }),
   lead: one(leads, {
     fields: [jobs.leadId],
@@ -178,6 +246,10 @@ export const users = pgTable("users", {
 
 export type Contact = typeof contacts.$inferSelect;
 export type NewContact = typeof contacts.$inferInsert;
+export type Property = typeof properties.$inferSelect;
+export type NewProperty = typeof properties.$inferInsert;
+export type PropertyContact = typeof propertyContacts.$inferSelect;
+export type NewPropertyContact = typeof propertyContacts.$inferInsert;
 export type Lead = typeof leads.$inferSelect;
 export type NewLead = typeof leads.$inferInsert;
 export type Activity = typeof activities.$inferSelect;

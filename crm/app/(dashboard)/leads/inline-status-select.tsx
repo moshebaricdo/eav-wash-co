@@ -32,7 +32,7 @@ export function InlineStatusSelect({
           updateLeadStatus(leadId, e.target.value as LeadStatus);
         });
       }}
-      className={`appearance-none rounded-full border px-2.5 py-0.5 pr-6 font-body text-xs font-medium outline-none cursor-pointer disabled:opacity-50 ${
+      className={`inline-block w-auto max-w-fit appearance-none rounded-full border px-2.5 py-0.5 pr-6 font-body text-xs font-medium outline-none cursor-pointer disabled:opacity-50 ${
         STATUS_COLORS[currentStatus] ?? STATUS_COLORS.new
       }`}
     >

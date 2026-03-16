@@ -77,7 +77,7 @@ export function ContactEditForm({
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="font-body text-xs font-medium text-eav-muted">
-            Address
+            Primary Address
           </label>
           <input
             name="address"
@@ -99,6 +99,10 @@ export function ContactEditForm({
           />
         </div>
       </div>
+
+      <p className="mt-3 font-body text-xs text-eav-muted">
+        Property relationships are managed below in the Properties section.
+      </p>
 
       <div className="mt-4 flex items-center gap-3">
         <button

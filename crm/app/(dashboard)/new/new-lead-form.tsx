@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useActionState } from "react";
 import { Search } from "lucide-react";
 import { createLeadManually } from "./actions";
@@ -11,6 +11,12 @@ type ContactOption = {
   email: string | null;
   phone: string | null;
   address: string | null;
+};
+
+type PropertyOption = {
+  id: string;
+  name: string | null;
+  address: string;
 };
 
 const SURFACES = [
@@ -32,27 +38,44 @@ const TIMELINES = [
   { id: "flexible", label: "Flexible" },
 ];
 
-export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
+export function NewLeadForm({
+  contacts,
+  properties,
+  propertyLinks,
+}: {
+  contacts: ContactOption[];
+  properties: PropertyOption[];
+  propertyLinks: { contactId: string; propertyId: string }[];
+}) {
   const [state, formAction, pending] = useActionState(createLeadManually, {
     error: "",
   });
   const [showOther, setShowOther] = useState(false);
-  const [mode, setMode] = useState<"new" | "existing">(contacts.length > 0 ? "existing" : "new");
-  const [selectedContact, setSelectedContact] = useState<ContactOption | null>(null);
+  const [mode, setMode] = useState<"new" | "existing">(
+    contacts.length > 0 ? "existing" : "new",
+  );
+  const [selectedContact, setSelectedContact] = useState<ContactOption | null>(
+    null,
+  );
   const [search, setSearch] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [propertyMode, setPropertyMode] = useState<"existing" | "new">(
+    "new",
+  );
+  const [selectedPropertyId, setSelectedPropertyId] = useState("");
   const pickerRef = useRef<HTMLDivElement>(null);
 
-  const filtered = search.length > 0
-    ? contacts.filter((c) => {
-        const q = search.toLowerCase();
-        return (
-          c.name.toLowerCase().includes(q) ||
-          c.email?.toLowerCase().includes(q) ||
-          c.phone?.includes(q)
-        );
-      })
-    : contacts;
+  const filtered =
+    search.length > 0
+      ? contacts.filter((c) => {
+          const q = search.toLowerCase();
+          return (
+            c.name.toLowerCase().includes(q) ||
+            c.email?.toLowerCase().includes(q) ||
+            c.phone?.includes(q)
+          );
+        })
+      : contacts;
 
   useEffect(() => {
     if (!pickerOpen) return;
@@ -65,10 +88,27 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [pickerOpen]);
 
+  const selectedContactId = mode === "existing" ? selectedContact?.id ?? "" : "";
+  const linkedPropertyIds = useMemo(
+    () =>
+      new Set(
+        propertyLinks
+          .filter((link) => link.contactId === selectedContactId)
+          .map((link) => link.propertyId),
+      ),
+    [propertyLinks, selectedContactId],
+  );
+  const filteredProperties = useMemo(
+    () => properties.filter((property) => linkedPropertyIds.has(property.id)),
+    [linkedPropertyIds, properties],
+  );
+  const hasLinkedProperties = filteredProperties.length > 0;
+  const canChooseProperty = mode === "new" || selectedContact !== null;
+
   return (
     <form action={formAction} className="space-y-6">
       {state.error && (
-        <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3">
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3">
           <p className="font-body text-sm text-red-600">{state.error}</p>
         </div>
       )}
@@ -83,19 +123,12 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
             <div className="flex rounded-md border border-eav-border text-xs font-body font-medium">
               <button
                 type="button"
-                onClick={() => { setMode("new"); setSelectedContact(null); }}
-                className={`px-3 py-1.5 rounded-l-md transition-colors ${
-                  mode === "new"
-                    ? "bg-eav-orange text-eav-white"
-                    : "text-eav-muted hover:text-eav-black"
-                }`}
-              >
-                New
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("existing")}
-                className={`px-3 py-1.5 rounded-r-md transition-colors ${
+                onClick={() => {
+                  setMode("existing");
+                  setSelectedPropertyId("");
+                  setPropertyMode("new");
+                }}
+                className={`rounded-l-md px-3 py-1.5 transition-colors ${
                   mode === "existing"
                     ? "bg-eav-orange text-eav-white"
                     : "text-eav-muted hover:text-eav-black"
@@ -103,13 +136,33 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
               >
                 Existing
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("new");
+                  setSelectedContact(null);
+                  setSelectedPropertyId("");
+                  setPropertyMode("new");
+                }}
+                className={`rounded-r-md px-3 py-1.5 transition-colors ${
+                  mode === "new"
+                    ? "bg-eav-orange text-eav-white"
+                    : "text-eav-muted hover:text-eav-black"
+                }`}
+              >
+                New
+              </button>
             </div>
           )}
         </div>
 
         {mode === "existing" ? (
           <>
-            <input type="hidden" name="existingContactId" value={selectedContact?.id ?? ""} />
+            <input
+              type="hidden"
+              name="existingContactId"
+              value={selectedContact?.id ?? ""}
+            />
 
             {selectedContact ? (
               <div className="flex items-center justify-between rounded-md border-2 border-eav-orange/30 bg-eav-orange/5 px-4 py-3">
@@ -125,7 +178,12 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => { setSelectedContact(null); setSearch(""); }}
+                  onClick={() => {
+                    setSelectedContact(null);
+                    setSearch("");
+                    setSelectedPropertyId("");
+                    setPropertyMode("new");
+                  }}
                   className="font-body text-xs font-medium text-eav-orange hover:underline"
                 >
                   Change
@@ -138,7 +196,10 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
                   <input
                     type="text"
                     value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPickerOpen(true); }}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPickerOpen(true);
+                    }}
                     onFocus={() => setPickerOpen(true)}
                     placeholder="Search by name, email, or phone..."
                     className="w-full rounded-md border-2 border-eav-border bg-eav-white py-2 pl-9 pr-3.5 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
@@ -156,9 +217,16 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
                           key={c.id}
                           type="button"
                           onClick={() => {
+                            const hasPropertiesForContact = propertyLinks.some(
+                              (link) => link.contactId === c.id,
+                            );
                             setSelectedContact(c);
                             setPickerOpen(false);
                             setSearch("");
+                            setSelectedPropertyId("");
+                            setPropertyMode(
+                              hasPropertiesForContact ? "existing" : "new",
+                            );
                           }}
                           className="flex w-full flex-col px-4 py-2.5 text-left transition-colors hover:bg-eav-surface"
                         >
@@ -166,7 +234,8 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
                             {c.name}
                           </span>
                           <span className="font-body text-xs text-eav-muted">
-                            {[c.email, c.phone].filter(Boolean).join(" · ") || "No email or phone"}
+                            {[c.email, c.phone].filter(Boolean).join(" · ") ||
+                              "No email or phone"}
                           </span>
                         </button>
                       ))
@@ -229,7 +298,7 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
               </label>
               <select
                 name="source"
-                className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange cursor-pointer"
+                className="cursor-pointer rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange"
               >
                 {SOURCES.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -249,6 +318,97 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
         </h2>
 
         <div className="space-y-4">
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block font-body text-xs font-medium text-eav-muted">
+                Property <span className="text-eav-orange">*</span>
+              </label>
+              {canChooseProperty && (
+                <div className="flex rounded-md border border-eav-border text-xs font-body font-medium">
+                  <button
+                    type="button"
+                    disabled={!hasLinkedProperties}
+                    onClick={() => {
+                      if (hasLinkedProperties) {
+                        setPropertyMode("existing");
+                      }
+                    }}
+                    className={`rounded-l-md px-3 py-1.5 transition-colors ${
+                      propertyMode === "existing"
+                        ? "bg-eav-orange text-eav-white"
+                        : "text-eav-muted hover:text-eav-black"
+                    } ${!hasLinkedProperties ? "cursor-not-allowed opacity-50 hover:text-eav-muted" : ""}`}
+                  >
+                    Existing
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPropertyMode("new");
+                      setSelectedPropertyId("");
+                    }}
+                    className={`rounded-r-md px-3 py-1.5 transition-colors ${
+                      propertyMode === "new"
+                        ? "bg-eav-orange text-eav-white"
+                        : "text-eav-muted hover:text-eav-black"
+                    }`}
+                  >
+                    New
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {!canChooseProperty ? (
+              <>
+                <input type="hidden" name="existingPropertyId" value="" />
+                <input
+                  name="propertyAddress"
+                  type="text"
+                  value=""
+                  disabled
+                  readOnly
+                  placeholder="Select an existing contact first..."
+                  className="w-full rounded-md border-2 border-eav-border bg-eav-surface px-3.5 py-2 font-body text-sm text-eav-muted outline-none cursor-not-allowed"
+                />
+              </>
+            ) : propertyMode === "existing" && hasLinkedProperties ? (
+              <>
+                <input
+                  type="hidden"
+                  name="existingPropertyId"
+                  value={selectedPropertyId}
+                />
+                <select
+                  required
+                  value={selectedPropertyId}
+                  onChange={(e) => setSelectedPropertyId(e.target.value)}
+                  className="w-full cursor-pointer rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange"
+                >
+                  <option value="">Select a property...</option>
+                  {filteredProperties.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name ? `${p.name} - ${p.address}` : p.address}
+                    </option>
+                  ))}
+                </select>
+              </>
+            ) : (
+              <input
+                name="propertyAddress"
+                type="text"
+                required
+                placeholder="123 Main St, Atlanta, GA"
+                className="w-full rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
+              />
+            )}
+            {canChooseProperty && !hasLinkedProperties && (
+              <p className="mt-1 font-body text-xs text-eav-muted">
+                No saved properties for this contact yet. Add a new address to continue.
+              </p>
+            )}
+          </div>
+
           <div>
             <label className="mb-2 block font-body text-xs font-medium text-eav-muted">
               Services Requested
@@ -328,17 +488,6 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
                 className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="font-body text-xs font-medium text-eav-muted">
-                Job Site Address
-              </label>
-              <input
-                name="jobAddress"
-                type="text"
-                placeholder="Same as contact or different"
-                className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
-              />
-            </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -358,7 +507,7 @@ export function NewLeadForm({ contacts }: { contacts: ContactOption[] }) {
       <button
         type="submit"
         disabled={pending}
-        className="h-11 w-full rounded-md bg-eav-orange font-body text-sm font-semibold text-eav-white transition-all hover:brightness-95 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+        className="h-11 w-full cursor-pointer rounded-md bg-eav-orange font-body text-sm font-semibold text-eav-white transition-all hover:brightness-95 active:scale-[0.98] disabled:opacity-50"
       >
         {pending ? "Creating..." : "Create Lead"}
       </button>

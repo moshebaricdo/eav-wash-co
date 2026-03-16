@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Phone, Mail, MapPin, CalendarPlus } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MapPin, CalendarPlus, Home } from "lucide-react";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   contacts,
   leads,
   activities,
+  properties,
+  propertyContacts,
   LEAD_STATUS_LABELS,
   SOURCE_LABELS,
 } from "@/lib/db/schema";
@@ -14,6 +16,7 @@ import type { LeadStatus } from "@/lib/db/schema";
 import { ContactEditForm } from "./contact-edit-form";
 import { PromoteButton } from "./promote-button";
 import { ContactNoteForm } from "./contact-note-form";
+import { ContactPropertyForm } from "./contact-property-form";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +61,7 @@ export default async function ContactDetailPage({ params }: Props) {
 
   if (!contact) notFound();
 
-  const [contactLeads, activityList] = await Promise.all([
+  const [contactLeads, activityList, linkedProperties, allProperties] = await Promise.all([
     db
       .select()
       .from(leads)
@@ -70,6 +73,25 @@ export default async function ContactDetailPage({ params }: Props) {
       .where(eq(activities.contactId, id))
       .orderBy(desc(activities.createdAt))
       .limit(50),
+    db
+      .select({
+        id: properties.id,
+        name: properties.name,
+        address: properties.address,
+        role: propertyContacts.role,
+      })
+      .from(propertyContacts)
+      .innerJoin(properties, eq(propertyContacts.propertyId, properties.id))
+      .where(eq(propertyContacts.contactId, id))
+      .orderBy(desc(propertyContacts.createdAt)),
+    db
+      .select({
+        id: properties.id,
+        name: properties.name,
+        address: properties.address,
+      })
+      .from(properties)
+      .orderBy(desc(properties.updatedAt)),
   ]);
 
   return (
@@ -220,6 +242,45 @@ export default async function ContactDetailPage({ params }: Props) {
               </div>
             )}
           </div>
+
+          {/* Property links */}
+          <div className="rounded-lg border border-eav-border bg-eav-white p-5">
+            <h2 className="mb-4 font-heading text-sm font-bold uppercase tracking-wide text-eav-black">
+              Properties ({linkedProperties.length})
+            </h2>
+
+            {linkedProperties.length === 0 ? (
+              <p className="font-body text-sm text-eav-muted">
+                No properties linked to this contact yet.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {linkedProperties.map((property) => (
+                  <div
+                    key={property.id}
+                    className="flex items-center justify-between rounded-md border border-eav-border p-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Home className="h-3.5 w-3.5 text-eav-muted" />
+                      <div>
+                        <p className="font-body text-sm font-medium text-eav-black">
+                          {property.name ?? "Property"}
+                        </p>
+                        <p className="font-body text-xs text-eav-muted">
+                          {property.address}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-eav-surface px-2 py-0.5 font-body text-[10px] font-medium uppercase tracking-wide text-eav-muted">
+                      {property.role.replace("_", " ")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <ContactPropertyForm contactId={contact.id} properties={allProperties} />
         </div>
 
         {/* Right column — Activity */}

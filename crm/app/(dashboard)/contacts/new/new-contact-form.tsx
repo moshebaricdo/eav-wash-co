@@ -23,12 +23,22 @@ const TIMELINES = [
   { id: "flexible", label: "Flexible" },
 ];
 
-export function NewContactForm() {
+type PropertyOption = {
+  id: string;
+  name: string | null;
+  address: string;
+};
+
+export function NewContactForm({ properties }: { properties: PropertyOption[] }) {
   const [state, formAction, pending] = useActionState(createContact, {
     error: "",
   });
   const [addLead, setAddLead] = useState(false);
   const [showOther, setShowOther] = useState(false);
+  const [propertyMode, setPropertyMode] = useState<"existing" | "new">(
+    properties.length > 0 ? "existing" : "new",
+  );
+  const [selectedPropertyId, setSelectedPropertyId] = useState("");
 
   return (
     <form action={formAction} className="space-y-6">
@@ -142,6 +152,74 @@ export function NewContactForm() {
 
           <div className="space-y-4">
             <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block font-body text-xs font-medium text-eav-muted">
+                  Property <span className="text-eav-orange">*</span>
+                </label>
+                {properties.length > 0 && (
+                  <div className="flex rounded-md border border-eav-border text-xs font-body font-medium">
+                    <button
+                      type="button"
+                      onClick={() => setPropertyMode("existing")}
+                      className={`rounded-l-md px-3 py-1.5 transition-colors ${
+                        propertyMode === "existing"
+                          ? "bg-eav-orange text-eav-white"
+                          : "text-eav-muted hover:text-eav-black"
+                      }`}
+                    >
+                      Existing
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPropertyMode("new");
+                        setSelectedPropertyId("");
+                      }}
+                      className={`rounded-r-md px-3 py-1.5 transition-colors ${
+                        propertyMode === "new"
+                          ? "bg-eav-orange text-eav-white"
+                          : "text-eav-muted hover:text-eav-black"
+                      }`}
+                    >
+                      New
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {propertyMode === "existing" && properties.length > 0 ? (
+                <>
+                  <input
+                    type="hidden"
+                    name="existingPropertyId"
+                    value={selectedPropertyId}
+                  />
+                  <select
+                    required
+                    value={selectedPropertyId}
+                    onChange={(e) => setSelectedPropertyId(e.target.value)}
+                    className="w-full cursor-pointer rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange"
+                  >
+                    <option value="">Select a property...</option>
+                    {properties.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name ? `${p.name} - ${p.address}` : p.address}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              ) : (
+                <input
+                  name="propertyAddress"
+                  type="text"
+                  required
+                  placeholder="123 Main St, Atlanta, GA"
+                  className="w-full rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
+                />
+              )}
+            </div>
+
+            <div>
               <label className="mb-2 block font-body text-xs font-medium text-eav-muted">
                 Services Requested
               </label>
@@ -217,17 +295,6 @@ export function NewContactForm() {
                   step="0.01"
                   min="0"
                   placeholder="0.00"
-                  className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="font-body text-xs font-medium text-eav-muted">
-                  Job Site Address
-                </label>
-                <input
-                  name="jobAddress"
-                  type="text"
-                  placeholder="Same as contact or different"
                   className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
                 />
               </div>

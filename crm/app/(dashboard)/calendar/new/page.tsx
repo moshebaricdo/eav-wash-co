@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { contacts, leads } from "@/lib/db/schema";
+import { contacts, leads, properties, propertyContacts } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { ScheduleJobForm } from "./schedule-job-form";
 
@@ -21,6 +21,7 @@ export default async function ScheduleJobPage({ searchParams }: Props) {
     surfaces: string[] | null;
     address: string | null;
     contactId: string;
+    propertyId: string | null;
   } | null = null;
 
   if (params.leadId) {
@@ -35,6 +36,7 @@ export default async function ScheduleJobPage({ searchParams }: Props) {
         surfaces: lead.surfaces as string[] | null,
         address: lead.address,
         contactId: lead.contactId,
+        propertyId: lead.propertyId,
       };
       const [contact] = await db
         .select()
@@ -64,10 +66,31 @@ export default async function ScheduleJobPage({ searchParams }: Props) {
     }
   }
 
-  const allContacts = await db
-    .select({ id: contacts.id, name: contacts.name })
-    .from(contacts)
-    .orderBy(desc(contacts.createdAt));
+  const [allContacts, allProperties, allPropertyLinks, allLeads] = await Promise.all([
+    db
+      .select({ id: contacts.id, name: contacts.name })
+      .from(contacts)
+      .orderBy(desc(contacts.createdAt)),
+    db
+      .select({ id: properties.id, name: properties.name, address: properties.address })
+      .from(properties)
+      .orderBy(desc(properties.updatedAt)),
+    db
+      .select({
+        contactId: propertyContacts.contactId,
+        propertyId: propertyContacts.propertyId,
+      })
+      .from(propertyContacts),
+    db
+      .select({
+        id: leads.id,
+        contactId: leads.contactId,
+        propertyId: leads.propertyId,
+        status: leads.status,
+      })
+      .from(leads)
+      .orderBy(desc(leads.updatedAt)),
+  ]);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -91,8 +114,12 @@ export default async function ScheduleJobPage({ searchParams }: Props) {
 
       <ScheduleJobForm
         contacts={allContacts}
+        properties={allProperties}
+        propertyLinks={allPropertyLinks}
+        leads={allLeads}
         prefilledContactId={prefilledContact?.id ?? null}
         prefilledLeadId={prefilledLead?.id ?? null}
+        prefilledPropertyId={prefilledLead?.propertyId ?? null}
         prefilledTitle={
           prefilledLead?.surfaces
             ? prefilledLead.surfaces.join(", ") + " cleaning"
