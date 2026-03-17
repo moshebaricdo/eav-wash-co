@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import { useActionState } from "react";
 import { Search } from "lucide-react";
 import { createLeadManually } from "./actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 type ContactOption = {
   id: string;
@@ -285,9 +286,8 @@ export function NewLeadForm({
               <label className="font-body text-xs font-medium text-eav-muted">
                 Address
               </label>
-              <input
+              <AddressAutocompleteInput
                 name="address"
-                type="text"
                 placeholder="123 Main St, Atlanta, GA"
                 className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
               />
@@ -394,9 +394,8 @@ export function NewLeadForm({
                 </select>
               </>
             ) : (
-              <input
+              <AddressAutocompleteInput
                 name="propertyAddress"
-                type="text"
                 required
                 placeholder="123 Main St, Atlanta, GA"
                 className="w-full rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"

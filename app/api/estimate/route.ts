@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
-import { createEstimateLead } from "@/lib/db";
+
+function getCrmApiConfig() {
+  const baseUrl = process.env.CRM_API_BASE_URL?.trim();
+  const token = process.env.CRM_API_TOKEN?.trim();
+  if (!baseUrl || !token) return null;
+
+  return {
+    url: `${baseUrl.replace(/\/+$/, "")}/api/estimate`,
+    token,
+  };
+}
 
 export async function POST(request: Request) {
   try {
@@ -22,31 +32,48 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await createEstimateLead({
-      surfaces,
-      otherDetails: otherDetails || "",
-      timeline,
-      name,
-      phone,
-      email,
-      address: address || "",
-      notes: notes || "",
-      attribution: attribution || undefined,
-    });
+    const crmApi = getCrmApiConfig();
+    if (!crmApi) {
+      console.error("Missing CRM API config: CRM_API_BASE_URL and CRM_API_TOKEN are required");
+      return NextResponse.json(
+        { error: "Estimate service is temporarily unavailable" },
+        { status: 503 },
+      );
+    }
 
-    if (!result) {
-      console.log("Estimate request received (no DB):", {
+    const upstream = await fetch(crmApi.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${crmApi.token}`,
+      },
+      body: JSON.stringify({
         surfaces,
+        otherDetails: otherDetails || "",
         timeline,
         name,
         phone,
         email,
-      });
+        address: address || "",
+        notes: notes || "",
+        attribution: attribution || undefined,
+      }),
+      cache: "no-store",
+    });
+
+    const upstreamBody = await upstream.json().catch(() => null);
+    if (!upstream.ok) {
+      return NextResponse.json(
+        {
+          error: upstreamBody?.error || "Could not submit estimate right now",
+        },
+        { status: upstream.status },
+      );
     }
 
     return NextResponse.json({
       success: true,
-      leadId: result?.leadId ?? null,
+      leadId: upstreamBody?.leadId ?? null,
     });
   } catch (err) {
     console.error("Estimate submission error:", err);

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateContact } from "../actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 export function ContactEditForm({
   contactId,
@@ -79,9 +80,8 @@ export function ContactEditForm({
           <label className="font-body text-xs font-medium text-eav-muted">
             Primary Address
           </label>
-          <input
+          <AddressAutocompleteInput
             name="address"
-            type="text"
             defaultValue={address}
             className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange"
           />

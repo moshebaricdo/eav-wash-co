@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import { createJob } from "../actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 export function ScheduleJobForm({
   contacts,
@@ -272,9 +273,8 @@ export function ScheduleJobForm({
                 </select>
               </>
             ) : (
-              <input
+              <AddressAutocompleteInput
                 name="propertyAddress"
-                type="text"
                 required
                 defaultValue={prefilledAddress}
                 placeholder="123 Main St, Atlanta, GA"

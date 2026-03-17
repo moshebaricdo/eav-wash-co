@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useActionState } from "react";
 import { createContact } from "./actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 const SOURCES = [
   { id: "manual", label: "Manual Entry" },
@@ -92,9 +93,8 @@ export function NewContactForm({ properties }: { properties: PropertyOption[] })
             <label className="font-body text-xs font-medium text-eav-muted">
               Address
             </label>
-            <input
+            <AddressAutocompleteInput
               name="address"
-              type="text"
               placeholder="123 Main St, Atlanta, GA"
               className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
             />
@@ -209,9 +209,8 @@ export function NewContactForm({ properties }: { properties: PropertyOption[] })
                   </select>
                 </>
               ) : (
-                <input
+                <AddressAutocompleteInput
                   name="propertyAddress"
-                  type="text"
                   required
                   placeholder="123 Main St, Atlanta, GA"
                   className="w-full rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"

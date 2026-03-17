@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Proxies address autocomplete requests to the Google Places API (New).
- * Keeps the API key server-side so it's never exposed to the client.
- *
- * GET /api/places-autocomplete?input=123+Main+St
- */
-
 function getGooglePlacesApiKey() {
   return (
     process.env.GOOGLE_PLACES_API_KEY ||
@@ -24,35 +17,29 @@ export async function GET(req: NextRequest) {
 
   const apiKey = getGooglePlacesApiKey();
   if (!apiKey) {
-    console.error("[places-autocomplete] Missing Google API key");
+    console.error("[crm places-autocomplete] Missing Google API key");
     return NextResponse.json([]);
   }
 
   try {
-    const body = {
-      input,
-      includedRegionCodes: ["us"],
-    };
-
-    const res = await fetch(
-      "https://places.googleapis.com/v1/places:autocomplete",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": apiKey,
-          "X-Goog-FieldMask":
-            "suggestions.placePrediction.place,suggestions.placePrediction.placeId,suggestions.placePrediction.text",
-        },
-        body: JSON.stringify(body),
-        cache: "no-store",
+    const res = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "suggestions.placePrediction.place,suggestions.placePrediction.placeId,suggestions.placePrediction.text",
       },
-    );
+      body: JSON.stringify({
+        input,
+        includedRegionCodes: ["us"],
+      }),
+      cache: "no-store",
+    });
 
     const data = await res.json();
-
     if (!res.ok) {
-      console.error("[places-autocomplete] Google API error:", res.status, data);
+      console.error("[crm places-autocomplete] Google API error:", res.status, data);
       return NextResponse.json([]);
     }
 
@@ -76,7 +63,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(suggestions);
   } catch (err) {
-    console.error("[places-autocomplete] Fetch error:", err);
+    console.error("[crm places-autocomplete] Fetch error:", err);
     return NextResponse.json([]);
   }
 }

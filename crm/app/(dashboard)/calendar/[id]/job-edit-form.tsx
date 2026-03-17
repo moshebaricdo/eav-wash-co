@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateJobDetails } from "../actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 export function JobEditForm({
   jobId,
@@ -97,9 +98,8 @@ export function JobEditForm({
           <label className="font-body text-xs font-medium text-eav-muted">
             Address
           </label>
-          <input
+          <AddressAutocompleteInput
             name="address"
-            type="text"
             defaultValue={address}
             className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none focus:border-eav-orange"
           />

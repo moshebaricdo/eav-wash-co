@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { linkPropertyToContact } from "../actions";
+import { AddressAutocompleteInput } from "@/components/address-autocomplete-input";
 
 type PropertyOption = {
   id: string;
@@ -100,9 +101,8 @@ export function ContactPropertyForm({
               <label className="font-body text-xs font-medium text-eav-muted">
                 Property Address
               </label>
-              <input
+              <AddressAutocompleteInput
                 name="propertyAddress"
-                type="text"
                 required
                 placeholder="123 Main St, Atlanta, GA"
                 className="rounded-md border-2 border-eav-border bg-eav-white px-3.5 py-2 font-body text-sm text-eav-black outline-none placeholder:text-eav-muted focus:border-eav-orange"
