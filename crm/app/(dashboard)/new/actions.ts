@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { and, eq, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { contacts, leads, activities, properties, propertyContacts } from "@/lib/db/schema";
+import { sendNewLeadSmsNotification } from "@/lib/notifications/quo";
 
 export async function createLeadManually(
   _prev: { error: string },
@@ -198,6 +199,20 @@ export async function createLeadManually(
     type: "note",
     content: `Lead created manually${surfacesRaw.length > 0 ? `: ${surfacesRaw.join(", ")}` : ""}`,
   });
+
+  try {
+    await sendNewLeadSmsNotification({
+      leadId: lead.id,
+      name: name || "Unknown",
+      phone: phone || null,
+      address: propertyAddress,
+      source: source as "estimate_form" | "manual" | "phone" | "referral",
+      timeline: timeline || null,
+      surfaces: surfacesRaw.length > 0 ? surfacesRaw : null,
+    });
+  } catch (error) {
+    console.error("[notifications] Failed to send lead SMS notification", error);
+  }
 
   revalidatePath("/leads");
   revalidatePath("/contacts");

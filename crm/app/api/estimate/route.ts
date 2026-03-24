@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { and, eq, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { activities, contacts, leads, properties, propertyContacts } from "@/lib/db/schema";
+import { sendNewLeadSmsNotification } from "@/lib/notifications/quo";
 
 type EstimatePayload = {
   surfaces: string[];
@@ -153,6 +154,20 @@ async function createEstimateLead(payload: EstimatePayload) {
       attribution: payload.attribution ?? null,
     },
   });
+
+  try {
+    await sendNewLeadSmsNotification({
+      leadId: lead.id,
+      name: payload.name,
+      phone: normalizedPhone,
+      address: normalizedAddress || null,
+      source: "estimate_form",
+      timeline: payload.timeline,
+      surfaces: payload.surfaces,
+    });
+  } catch (error) {
+    console.error("[notifications] Failed to send lead SMS notification", error);
+  }
 
   return { leadId: lead.id };
 }
