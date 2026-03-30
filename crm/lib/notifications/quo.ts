@@ -123,17 +123,6 @@ async function sendQuoSms(content: string) {
   return { sent: true as const };
 }
 
-export async function sendTestSmsNotification() {
-  const stamp = new Date().toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
-  return sendQuoSms(`CRM SMS test successful\nSent at ${stamp}`);
-}
-
 export async function sendNewLeadSmsNotification(input: NewLeadSmsNotificationInput) {
   const config = getConfig();
   const content = buildLeadMessage(input, config?.crmBaseUrl);

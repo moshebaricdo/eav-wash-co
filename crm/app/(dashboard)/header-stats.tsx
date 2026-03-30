@@ -15,7 +15,6 @@ import {
   CalendarDays,
   Clock,
 } from "lucide-react";
-import { SmsTestButton } from "./sms-test-button";
 
 const WEATHER_LAT = parseFloat(process.env.WEATHER_LAT ?? "33.75");
 const WEATHER_LON = parseFloat(process.env.WEATHER_LON ?? "-84.39");
@@ -92,8 +91,6 @@ export async function HeaderStats() {
 
   return (
     <div className="ml-auto flex items-center gap-4 font-body text-xs md:ml-0">
-      <SmsTestButton />
-
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5 text-eav-muted">
           <Clock className="h-3.5 w-3.5" />
